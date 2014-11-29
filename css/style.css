@@ -1,0 +1,172 @@
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+  overflow-x: hidden;
+  color: #121515;
+  font-size: 11px;
+  background-color: black;
+  overflow: hidden;
+}
+
+.clear {
+  clear: both;
+}
+
+#jllogo {
+  vertical-align: middle;
+  padding: 0px 20px;
+}
+
+.header {
+  height: 40px;
+  background-color: black;
+  color: white;
+  position: fixed;
+  width: 100%;
+  top: 0px;
+  left: 0px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgb(30,30,40);
+}
+
+.hide {
+  display: none;
+}
+
+.menu {
+  padding: 5px;
+  background-color: rgba(0, 0, 1, 0.9);
+  z-index: 100;
+  position: fixed;
+  top: 55px;
+  left: 15px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.button-container {
+  margin-top: 5px;
+}
+
+.menu button {
+  width: 170px;
+  border-width: 0px;
+  cursor: pointer;
+  font-size: 10px;
+  line-height: 30px;
+  padding: 0px 0px;
+  color: white;
+  background-color: rgba(255,255,255,0.2); 
+  vertical-align: middle;
+  outline:none;
+}
+
+.menu button:hover {
+  background-color: rgba(255,255,255,0.2); 
+}
+
+.menu .filter-tiles {
+  border-width: 0px;
+  font-size: 10px;
+  line-height: 10px;
+  padding: 0px 20px;
+  margin: 7px 3px 3px 0px;
+  background-color: #DDF;
+  width: 150px;
+  color: #333;
+  vertical-align: middle;
+  height: 20px;
+  float: right;
+}
+
+.hexgrid {
+  z-index: 1;
+  margin-top: -150px;
+  margin-left: -150px;
+  width: 2000px;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none; /* Webkit */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE 10  */
+  -o-user-select: none;
+  user-select: none;  
+}
+
+.hex {
+  cursor: pointer;
+  float: left;
+  margin-left: 3px;
+  margin-bottom: -28px;
+}
+.hex .top {
+  width: 0;
+  border-bottom: 30px solid #121515;
+  border-left: 52px solid transparent;
+  border-right: 52px solid transparent;
+}
+.hex .middle {
+  width: 104px;
+  height: 60px;
+  background: #121515;
+  display: table-cell; 
+  vertical-align: middle;
+  word-wrap: break-word;
+  text-align: center;
+}
+.hex .middle .hex-content {
+  width: 80px;
+  margin: auto;
+  text-align: center;
+}
+.hex .bottom {
+  width: 0;
+  border-top: 30px solid #121515;
+  border-left: 52px solid transparent;
+  border-right: 52px solid transparent;
+}
+.hex-even-start {
+  clear: left;
+}
+.hex-odd-start {
+  clear: left;
+  margin-left: 56px;
+}
+
+.hex.one .top, .hex.one-hover .top { border-bottom: 30px solid #005089; }
+.hex.one .middle, .hex.one-hover .middle { background: #005089; color: #BBB; }
+.hex.one .bottom, .hex.one-hover .bottom { border-top: 30px solid #005089; }
+.menu button.one.enabled { background: #005089; }
+
+.hex.two .top, .hex.two-hover .top { border-bottom: 30px solid #df6832; }
+.hex.two .middle, .hex.two-hover .middle { background: #df6832; color: #BBB; }
+.hex.two .bottom, .hex.two-hover .bottom { border-top: 30px solid #df6832; }
+.menu button.two.enabled { background: #df6832; }
+
+.hex.three .top, .hex.three-hover .top { border-bottom: 30px solid #e84c3d; }
+.hex.three .middle, .hex.three-hover .middle { background: #e84c3d; color: #BBB; }
+.hex.three .bottom, .hex.three-hover .bottom { border-top: 30px solid #e84c3d; }
+.menu button.three.enabled { background: #e84c3d; }
+
+.hex.four .top, .hex.four-hover .top { border-bottom: 30px solid #17A086; }
+.hex.four .middle, .hex.four-hover .middle { background: #17A086; color: #BBB; }
+.hex.four .bottom, .hex.four-hover .bottom { border-top: 30px solid #17A086; }
+.menu button.four.enabled { background: #17A086; }
+
+.hex.five .top, .hex.five-hover .top { border-bottom: 30px solid #4c2c15; }
+.hex.five .middle, .hex.five-hover .middle { background: #4c2c15; color: #BBB; }
+.hex.five .bottom, .hex.five-hover .bottom { border-top: 30px solid #4c2c15; }
+
+.details-container {
+  width: 850px;
+  margin: 0px auto;
+  color: #CCC;
+}
+
+.details-container .message {
+  font-size: 13px;
+  line-height: 20px;
+  padding: 20px 20px 50px 30px;
+  background-color: rgba(240, 240, 250, 0.1);
+}

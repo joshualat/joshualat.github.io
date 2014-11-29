@@ -1,1 +1,37 @@
-Hello World
+<html>
+  <head>
+    <title>Joshua Lat 2.0</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    <link href='images/favicon.ico' rel='icon' type='image/png' />
+  </head>
+
+  <body ng-app="jlwebsite">
+    <div class="header">
+      <img id="jllogo" src="images/JL.png" width="40px" height="40px"/>
+    </div>
+    <div ng-controller="HexCtrl">
+      <div class="menu">
+        <div class="button-container">
+          <hexbutton category="one">Back-end Development</hexbutton>
+          <hexbutton category="two">Front-end Development</hexbutton>
+          <hexbutton category="three">Solution Architecture</hexbutton>
+          <hexbutton category="four">Everything Else</hexbutton>
+        </div>
+
+        <div class="details-container">
+          <div class="message" ng-bind-html="data.currentMessage | unsafe"></div>
+          <input ng-model="filter" class="filter-tiles" placeholder="Filter"/>
+        </div>
+      </div>
+      
+      <hexgrid skip="14" colored="{{ data.hexHighlight }}" filter="{{ filter }}">
+        <hex ng-repeat="skill in skills track by $index" category="{{ skill.category }}">{{ skill.name }}</hex>
+        <div class="clear"></div>
+      </hexgrid>
+    </div>
+
+    <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+  </body>
+</html>
