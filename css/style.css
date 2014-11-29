@@ -35,16 +35,12 @@ body {
 
 .menu {
   padding: 5px;
-  background-color: rgba(0, 0, 1, 0.9);
   z-index: 100;
   top: 50%;
   left: 50%;
   margin-left: -430px;
   margin-top: -153px;
   position: fixed;
-  border-width: 1px;
-  border-style: solid;
-  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .button-container {
@@ -52,38 +48,41 @@ body {
 }
 
 .menu button {
-  width: 170px;
+  width: 211px;
   border-width: 0px;
   cursor: pointer;
   font-size: 10px;
   line-height: 30px;
   padding: 0px 0px;
   color: white;
-  background-color: rgba(255,255,255,0.2); 
+  background-color: rgba(50,50,50,0.7); 
   vertical-align: middle;
   outline:none;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: rgba(150,150,150,0.1);
 }
 
 .menu button:hover {
-  background-color: rgba(255,255,255,0.3); 
+  background-color: rgba(100,100,100,0.6); 
 }
 
-.menu .filter-tiles {
+.filter-tiles {
   border-width: 0px;
   font-size: 10px;
   line-height: 10px;
-  padding: 0px 20px;
-  margin: 7px 3px 3px 0px;
+  padding: 2px 20px;
+  margin: 7px 15px 3px 0px;
   background-color: #DDE;
   width: 150px;
   color: #333;
   vertical-align: middle;
-  height: 20px;
+  height: 24px;
   float: right;
   cursor: pointer;
 }
 
-.menu .filter-tiles:hover {
+.filter-tiles:hover {
   background-color: #FFF;
 }
 
@@ -181,5 +180,8 @@ body {
   font-size: 13px;
   line-height: 20px;
   padding: 20px 20px 50px 30px;
-  background-color: rgba(240, 240, 250, 0.1);
+  background-color: rgba(20, 20, 20, 0.9);
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(150,150,150,0.1);
 }

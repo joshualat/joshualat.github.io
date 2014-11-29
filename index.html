@@ -25,6 +25,7 @@
   <body ng-app="jlwebsite">
     <div class="header">
       <img id="jllogo" src="images/JL.png" width="40px" height="40px"/>
+      <input ng-model="filter" class="filter-tiles" placeholder="Filter"/>
     </div>
     <div ng-controller="HexCtrl">
       <div class="menu">
@@ -37,7 +38,6 @@
 
         <div class="details-container">
           <div class="message" ng-bind-html="data.currentMessage | unsafe"></div>
-          <input ng-model="filter" class="filter-tiles" placeholder="Filter"/>
         </div>
       </div>
       
