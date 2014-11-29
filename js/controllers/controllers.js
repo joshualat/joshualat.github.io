@@ -8,11 +8,13 @@ app.controller("HexCtrl", function($scope) {
   messageHash["three"] = "As a SOLUTIONS ARCHITECT, I'm capable of designing and preparing a secure setup on Amazon Web Services. <br /><br />In the past, I've helped my team troubleshoot application and infrastructure problems such as those concerned with security, scaling, automation, and high-availability. I had the opportunity before to set up and maintain different databases such as PostgreSQL, MongoDB, and Redis on several E-commerce projects.";
   messageHash["four"] = "As a SCRUM MASTER, I serve as a servant leader to make the Scrum team more focused and productive. I facilitate meetings, manage the documents and timelines, and help teams detect and remove blockers as early in the development cycle as possible.<br /><br />In the past, I've helped several teams finish E-commerce projects on time by tweaking existing processes and aggressively monitoring the work hours and productivity of each developer.<br /><br />During my free time, I contribute to the society by sharing my knowledge in conferences and meetups.";
 
-  $scope.data.currentMessage = messageHash[$scope.data.hexHighlight];
+  var messageStart = "Hi I'm Josh! I am a Scrum Master and Full-Stack Lead Developer.<br /><br />"
+
+  $scope.data.currentMessage = messageStart + messageHash[$scope.data.hexHighlight];
 
   $scope.updateColored = function(category) {
     $scope.data.hexHighlight = category;
-    $scope.data.currentMessage = messageHash[$scope.data.hexHighlight];
+    $scope.data.currentMessage = messageStart + messageHash[$scope.data.hexHighlight];
   }
 
   var shuffleArray = function(array) {
