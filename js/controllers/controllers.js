@@ -9,12 +9,13 @@ app.controller("HexCtrl", function($scope) {
   messageHash["four"] = "As a SCRUM MASTER, I serve as a servant leader to make the Scrum team more focused and productive. I facilitate meetings, manage the documents and timelines, and help teams detect and remove blockers as early in the development cycle as possible.<br /><br />In the past, I've helped several teams finish E-commerce projects on time by tweaking existing processes and aggressively monitoring the work hours and productivity of each developer.<br /><br />During my free time, I contribute to the society by sharing my knowledge in conferences and meetups.";
 
   var messageStart = "Hi I'm Josh! I am a Scrum Master and Full-Stack Lead Developer.<br /><br />"
+  var messageEnd = "<br /><br /><br />Feel free to click on the hexagon tiles or search using the filter feature :)"
 
-  $scope.data.currentMessage = messageStart + messageHash[$scope.data.hexHighlight];
+  $scope.data.currentMessage = messageStart + messageHash[$scope.data.hexHighlight] + messageEnd;
 
   $scope.updateColored = function(category) {
     $scope.data.hexHighlight = category;
-    $scope.data.currentMessage = messageStart + messageHash[$scope.data.hexHighlight];
+    $scope.data.currentMessage = messageStart + messageHash[$scope.data.hexHighlight] + messageEnd;
   }
 
   var shuffleArray = function(array) {
