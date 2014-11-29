@@ -175,12 +175,14 @@ app.directive("hexgrid", function() {
       var childCategory = hexChild.attr('category');
 
       hexChild.unbind('click');
-      var text = hexChild.find('span').html().toLowerCase();
+      if (!hexChild.hasClass('clear')) {
+        var text = hexChild.find('span').html().toLowerCase();
 
-      if (text.indexOf(attr.filter.toLowerCase()) != -1) {
-        hexChild.addClass(childCategory);
-      } else {
-        hexChild.removeClass(childCategory);
+        if (text.indexOf(attr.filter.toLowerCase()) != -1) {
+          hexChild.addClass(childCategory);
+        } else {
+          hexChild.removeClass(childCategory);
+        }
       }
     }
   }
