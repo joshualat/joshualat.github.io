@@ -63,7 +63,7 @@ body {
 }
 
 .menu button:hover {
-  background-color: rgba(255,255,255,0.2); 
+  background-color: rgba(255,255,255,0.3); 
 }
 
 .menu .filter-tiles {
@@ -72,12 +72,17 @@ body {
   line-height: 10px;
   padding: 0px 20px;
   margin: 7px 3px 3px 0px;
-  background-color: #DDF;
+  background-color: #DDE;
   width: 150px;
   color: #333;
   vertical-align: middle;
   height: 20px;
   float: right;
+  cursor: pointer;
+}
+
+.menu .filter-tiles:hover {
+  background-color: #FFF;
 }
 
 .hexgrid {
@@ -165,6 +170,12 @@ body {
 }
 
 .details-container .message {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none; /* Webkit */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE 10  */
+  -o-user-select: none;
+  user-select: none;  
   font-size: 13px;
   line-height: 20px;
   padding: 20px 20px 50px 30px;
