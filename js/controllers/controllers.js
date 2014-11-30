@@ -1,7 +1,6 @@
 app.controller("HexCtrl", function($scope, $location, anchorSmoothScroll) {
   $scope.gotoAnchor = function(category) {
     var menuAnchor = 'menu-' + category
-    $location.hash(menuAnchor);
     anchorSmoothScroll.scrollTo(menuAnchor, 30);
   };
 
