@@ -1,4 +1,4 @@
-app.controller("HexCtrl", function($scope, anchorSmoothScroll, messages, skills, utils) {
+app.controller("HexCtrl", ["$scope", "anchorSmoothScroll", "messages", "skills", "utils", function($scope, anchorSmoothScroll, messages, skills, utils) {
   $scope.gotoAnchor = function(category) {
     var menuAnchor = 'menu-' + category
     anchorSmoothScroll.scrollTo(menuAnchor, 30);
@@ -14,4 +14,4 @@ app.controller("HexCtrl", function($scope, anchorSmoothScroll, messages, skills,
   }
 
   $scope.skills = utils.shuffleArray(skills.allSkills(3));
-});
+}]);

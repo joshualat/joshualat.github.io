@@ -1,4 +1,4 @@
-app.directive("hexscroll", function ($window) {
+app.directive("hexscroll", ["$window", function ($window) {
   return function(scope, element, attrs) {
     angular.element($window).bind("scroll", function() {
       var offset = this.pageYOffset;
@@ -20,4 +20,4 @@ app.directive("hexscroll", function ($window) {
       scope.$apply();
     });
   };
-});
+}]);
