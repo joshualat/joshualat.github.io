@@ -33,7 +33,7 @@
       
       <input ng-model="filter" class="filter-tiles" placeholder="Filter"/>
     </div>
-    <div>
+    <div class="content">
       <div class="menu" id="menu-{{ message.category }}" ng-repeat="message in data.messageArray">
         <div class="details-container">
           <div class="message">
@@ -47,8 +47,39 @@
           </div>
         </div>
       </div>
+
+      <div class="menu" id="menu-five">
+        <div class="details-container">
+          <div class="message">
+            <div class="topic">Connect</div>
+            <div class="details">
+              Don't forget to connect or visit me at:
+              <br /><br />
+              <a href='https://ph.linkedin.com/in/joshualat' target='_blank'>
+                <hex category="three">LinkedIn</hex>
+              </a>
+              <a href='https://www.facebook.com/josh.lat' target='_blank'>
+                <hex category="one">Facebook</hex>
+              </a>
+              <a href='https://github.com/joshualat' target='_blank'>
+                <hex category="two">Github</hex>
+              </a>
+              <a href='https://twitter.com/mrjoshualat' target='_blank'>
+                <hex category="four">Twitter</hex>
+              </a>
+              <a href='https://coderwall.com/joshualat' target='_blank'>
+                <hex category="one">Coderwall</hex>
+              </a>
+              <a href='https://plus.google.com/112090833520663769867' target='_blank'>
+                <hex category="three">Google Plus</hex>
+              </a>
+            </div>
+            <div class="clear"></div>
+          </div>
+        </div>
+      </div>
       
-      <hexgrid skip="14" colored="{{ data.hexHighlight }}" filter="{{ filter }}">
+      <hexgrid skip="11" colored="{{ data.hexHighlight }}" filter="{{ filter }}">
         <hex ng-repeat="skill in skills track by $index" category="{{ skill.category }}">{{ skill.name }}</hex>
         <div class="clear"></div>
       </hexgrid>

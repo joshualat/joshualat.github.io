@@ -11,8 +11,10 @@ app.directive("hexscroll", function ($window) {
         scope.data.hexHighlight = "two";
       } else if (1300 <= offset && offset < 2100) {
         scope.data.hexHighlight = "three";
-      } else if (2100 <= offset) {
+      } else if (2100 <= offset && offset < 2900) {
         scope.data.hexHighlight = "four";
+      } else {
+        scope.data.hexHighlight = "";
       }
 
       scope.$apply();
