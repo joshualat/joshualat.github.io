@@ -17,6 +17,7 @@ app.directive("hexgrid", function() {
         attr.$set('colored', targetChild.attr('category'));
 
         scope.updateColored(targetChild.attr('category'));
+        scope.gotoAnchor(targetChild.attr('category'));
         scope.$apply();
       });
 
@@ -69,6 +70,11 @@ app.directive("hexgrid", function() {
         } else {
           hexChild.removeClass(childCategory);
         }
+
+        hexChild.on('click', function () {
+          targetChild = angular.element(this);
+          scope.gotoAnchor(targetChild.attr('category'));
+        });
       }
     }
   }
@@ -104,7 +110,7 @@ app.directive("hexbutton" , function() {
     ctrl: "HexCtrl",
     template: function (element, attr) {
       return '<button ng-transclude ' +
-              'class="' + attr.category + '"' +
+              'class="hexbutton ' + attr.category + '">' +
               '</button>';
     },
     link: function (scope, element, attr) {
@@ -118,6 +124,7 @@ app.directive("hexbutton" , function() {
 
       element.unbind('click').on('click', function () {
         scope.updateColored(attr.category);
+        scope.gotoAnchor(attr.category);
         scope.$apply();
       })
     }
@@ -145,4 +152,26 @@ app.directive("hex", function () {
       });
     }
   }
+});
+
+app.directive("hexscroll", function ($window) {
+  return function(scope, element, attrs) {
+    angular.element($window).bind("scroll", function() {
+      var offset = this.pageYOffset;
+
+      if (offset < 0) {
+        scope.data.hexHighlight = "";
+      } else if (0 <= offset && offset < 500) {
+        scope.data.hexHighlight = "one";
+      } else if (500 <= offset && offset < 1300) {
+        scope.data.hexHighlight = "two";
+      } else if (1300 <= offset && offset < 2100) {
+        scope.data.hexHighlight = "three";
+      } else if (2100 <= offset) {
+        scope.data.hexHighlight = "four";
+      }
+
+      scope.$apply();
+    });
+  };
 });

@@ -22,22 +22,29 @@
     </script>
   </head>
 
-  <body ng-app="jlwebsite">
+  <body ng-app="jlwebsite" ng-controller="HexCtrl" hexscroll>
     <div class="header">
       <img id="jllogo" src="images/JL.png" width="40px" height="40px"/>
+
+      <hexbutton category="one">Back-end Development</hexbutton>
+      <hexbutton category="two">Front-end Development</hexbutton>
+      <hexbutton category="three">Solution Architecture</hexbutton>
+      <hexbutton category="four">Everything Else</hexbutton>
+      
       <input ng-model="filter" class="filter-tiles" placeholder="Filter"/>
     </div>
-    <div ng-controller="HexCtrl">
-      <div class="menu">
-        <div class="button-container">
-          <hexbutton category="one">Back-end Development</hexbutton>
-          <hexbutton category="two">Front-end Development</hexbutton>
-          <hexbutton category="three">Solution Architecture</hexbutton>
-          <hexbutton category="four">Everything Else</hexbutton>
-        </div>
-
+    <div>
+      <div class="menu" id="menu-{{ message.category }}" ng-repeat="message in data.messageArray">
         <div class="details-container">
-          <div class="message" ng-bind-html="data.currentMessage | unsafe"></div>
+          <div class="message">
+            <div class="topic">{{ message.title }}</div>
+            <div class="details" ng-bind-html="message.details | unsafe"></div>
+            <div class="clear"></div>
+            <div class="skills">
+              <div ng-repeat="skill in message.skills" class="skill {{ message.category }}">{{ skill }}</div>
+            </div>
+            <div class="clear"></div>
+          </div>
         </div>
       </div>
       
@@ -49,6 +56,7 @@
 
     <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript" src="js/services/services.js"></script>
     <script type="text/javascript" src="js/controllers/controllers.js"></script>
     <script type="text/javascript" src="js/directives/directives.js"></script>
   </body>
