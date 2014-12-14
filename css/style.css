@@ -190,25 +190,25 @@ body {
 }
 
 .hex.one .top, .hex.one-hover .top { border-bottom: 30px solid #002b36; }
-.hex.one .middle, .hex.one-hover .middle { background: #002b36; color: #BBB; }
+.hex.one .middle, .hex.one-hover .middle { background: #002b36; color: rgba(180, 180, 180, 0.7); }
 .hex.one .bottom, .hex.one-hover .bottom { border-top: 30px solid #002b36; }
 .hexbutton.one.enabled { background: #002b36; }
 .details-container .skill.one { background: #002b36; }
 
 .hex.two .top, .hex.two-hover .top { border-bottom: 30px solid #ef8852; }
-.hex.two .middle, .hex.two-hover .middle { background: #ef8852; color: #BBB; }
+.hex.two .middle, .hex.two-hover .middle { background: #ef8852; color: rgba(180, 180, 180, 0.7); }
 .hex.two .bottom, .hex.two-hover .bottom { border-top: 30px solid #ef8852; }
 .hexbutton.two.enabled { background: #ef8852; }
 .details-container .skill.two { background: #ef8852; }
 
 .hex.three .top, .hex.three-hover .top { border-bottom: 30px solid #888c8d; }
-.hex.three .middle, .hex.three-hover .middle { background: #888c8d; color: #BBB; }
+.hex.three .middle, .hex.three-hover .middle { background: #888c8d; color: rgba(180, 180, 180, 0.7); }
 .hex.three .bottom, .hex.three-hover .bottom { border-top: 30px solid #888c8d; }
 .hexbutton.three.enabled { background: #888c8d; }
 .details-container .skill.three { background: #888c8d; }
 
 .hex.four .top, .hex.four-hover .top { border-bottom: 30px solid #17A086; }
-.hex.four .middle, .hex.four-hover .middle { background: #17A086; color: #BBB; }
+.hex.four .middle, .hex.four-hover .middle { background: #17A086; color: rgba(180, 180, 180, 0.7); }
 .hex.four .bottom, .hex.four-hover .bottom { border-top: 30px solid #17A086; }
 .hexbutton.four.enabled { background: #17A086; }
 .details-container .skill.four { background: #17A086; }
