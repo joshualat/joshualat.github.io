@@ -189,23 +189,23 @@ body {
   transition: border 1500ms ease-in;
 }
 
-.hex.one .top, .hex.one-hover .top { border-bottom: 30px solid #005089; }
-.hex.one .middle, .hex.one-hover .middle { background: #005089; color: #BBB; }
-.hex.one .bottom, .hex.one-hover .bottom { border-top: 30px solid #005089; }
-.hexbutton.one.enabled { background: #005089; }
-.details-container .skill.one { background: #005089; }
+.hex.one .top, .hex.one-hover .top { border-bottom: 30px solid #002b36; }
+.hex.one .middle, .hex.one-hover .middle { background: #002b36; color: #BBB; }
+.hex.one .bottom, .hex.one-hover .bottom { border-top: 30px solid #002b36; }
+.hexbutton.one.enabled { background: #002b36; }
+.details-container .skill.one { background: #002b36; }
 
-.hex.two .top, .hex.two-hover .top { border-bottom: 30px solid #df6832; }
-.hex.two .middle, .hex.two-hover .middle { background: #df6832; color: #BBB; }
-.hex.two .bottom, .hex.two-hover .bottom { border-top: 30px solid #df6832; }
-.hexbutton.two.enabled { background: #df6832; }
-.details-container .skill.two { background: #df6832; }
+.hex.two .top, .hex.two-hover .top { border-bottom: 30px solid #ef8852; }
+.hex.two .middle, .hex.two-hover .middle { background: #ef8852; color: #BBB; }
+.hex.two .bottom, .hex.two-hover .bottom { border-top: 30px solid #ef8852; }
+.hexbutton.two.enabled { background: #ef8852; }
+.details-container .skill.two { background: #ef8852; }
 
-.hex.three .top, .hex.three-hover .top { border-bottom: 30px solid #e84c3d; }
-.hex.three .middle, .hex.three-hover .middle { background: #e84c3d; color: #BBB; }
-.hex.three .bottom, .hex.three-hover .bottom { border-top: 30px solid #e84c3d; }
-.hexbutton.three.enabled { background: #e84c3d; }
-.details-container .skill.three { background: #e84c3d; }
+.hex.three .top, .hex.three-hover .top { border-bottom: 30px solid #888c8d; }
+.hex.three .middle, .hex.three-hover .middle { background: #888c8d; color: #BBB; }
+.hex.three .bottom, .hex.three-hover .bottom { border-top: 30px solid #888c8d; }
+.hexbutton.three.enabled { background: #888c8d; }
+.details-container .skill.three { background: #888c8d; }
 
 .hex.four .top, .hex.four-hover .top { border-bottom: 30px solid #17A086; }
 .hex.four .middle, .hex.four-hover .middle { background: #17A086; color: #BBB; }
