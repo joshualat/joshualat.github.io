@@ -322,7 +322,7 @@ jlslides.directive("slidenav", function () {
         $shared.set('title', title)
       }
     },
-    template: '<div class="slide-nav"><img id="jllogo" src="images/JL.png" width="40px" height="40px"/><slidetitle></slidetitle><slideforward></slideforward><slidenumber></slidenumber><slideback></slideback><div class="clear"></div></div>',
+    template: '<div class="slide-nav"><img id="jllogo" src="../shared/images/JL.png" width="40px" height="40px"/><slidetitle></slidetitle><slideforward></slideforward><slidenumber></slidenumber><slideback></slideback><div class="clear"></div></div>',
     link: function (scope, element, attr, ctrl, transclude) {
       ctrl.updateHomePageTitle(attr.title);
     }
