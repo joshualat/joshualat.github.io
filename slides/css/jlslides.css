@@ -1,0 +1,278 @@
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+html { 
+  overflow:hidden; 
+}
+
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+  background-color: black;
+  overflow-x: hidden;
+  font-size: 11px;
+  margin: 0px;
+  padding: 0px;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none; /* Webkit */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE 10  */
+  -o-user-select: none;
+  user-select: none;  
+}
+
+.clear {
+  clear: both;
+}
+
+.slide .content {
+  position: relative;
+
+  top: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  transform: translateY(-50%);
+
+  font-size: 30px;
+}
+
+.slide .content pre {
+  font-size: 15px;
+  margin-left: 50px;
+}
+
+.slide {
+  width: 100%;
+  height: 100%;
+  background-color: #002b36;
+  color: #eee8d5;
+}
+
+.slide.home-slide {
+  background-color: #202020;
+}
+
+.slide a {
+  color: #268bd2;
+  text-decoration: none;
+}
+
+.slide a:hover {
+  color: #269be2;
+  text-decoration: none;
+}
+
+.slide-nav {
+  background-color: black;
+  color: white;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  top: 0px;
+  left: 0px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(70,70,80,0.5);
+}
+
+.slide-nav #jllogo {
+  float: left;
+  margin-left: 10px;
+}
+
+.slide-number {
+  float: right;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 20px;
+  margin-top: 10px;
+}
+
+.slide-title {
+  float: left;
+  margin-left: 10px;
+  margin-top: 5px;
+  text-align: center;
+
+  width: 350px;
+  border-width: 0px;
+  cursor: pointer;
+  font-size: 12px;
+  letter-spacing: 3px;
+  font-weight: bold;
+  line-height: 30px;
+  padding: 0px 0px;
+  color: white;
+  background: #222328;
+  text-transform: uppercase;
+  vertical-align: middle;
+  outline: none;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: rgba(150,150,150,0.1);
+  text-decoration: none;
+}
+
+.slide-title:hover {
+  background-color: #261100;
+}
+
+.home-links {
+  width: 900px;
+  position: relative;
+
+  top: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  transform: translateY(-50%);
+}
+
+.slide-links {
+  float: left;
+  margin-left: 35px;
+  margin-bottom: 8px;
+  text-align: center;
+
+  width: 400px;
+  border-width: 0px;
+  cursor: pointer;
+  font-size: 11px;
+  letter-spacing: 3px;
+  font-weight: bold;
+  line-height: 34px;
+  padding: 0px 0px;
+  color: white;
+  background-color: #327388;
+  text-transform: uppercase;
+  vertical-align: middle;
+  outline: none;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: rgba(150,150,150,0.1);
+
+  border-radius: 5px;
+}
+
+.slide-links:hover {
+  background-color: #62A3B8;
+}
+
+.arrow-left {
+  width: 0; 
+  height: 0; 
+  border: none;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 20px solid #002b36;
+  float: right;
+  margin-right: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.arrow-right {
+  width: 0; 
+  height: 0; 
+  border: none;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 20px solid #002b36;
+  float: right;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.arrow-left:hover {
+  border-right-color: #2070A9;
+}
+
+.arrow-right:hover {
+  border-left-color: #2070A9;
+}
+
+.arrow-left.disabled {
+  border-right-color: #222;
+}
+
+.arrow-right.disabled {
+ border-left-color: #222; 
+}
+
+.slide-progress {
+  position: fixed;
+  height: 2px;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 5;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.slide-progress span {
+  height: 100%;
+  display: block;
+  background-color: #268bd2;
+  transition: width 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+
+.ng-view {
+    -webkit-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -moz-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -ms-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -o-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* easeOutQuad */
+    -webkit-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -moz-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -ms-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -o-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* easeOutQuad */
+}
+
+.ng-view.ng-enter {
+    opacity: 0;
+    transition-duration: 1.5s;
+    -webkit-transition-duration: 1.5s;
+}
+
+.ng-view.ng-enter-active {
+    opacity: 1;
+}
+
+.ng-view.ng-leave {
+    opacity: 1;
+    transition-duration: 500ms;
+    -webkit-transition-duration: 500ms;
+}
+
+.ng-view.ng-leave-active {
+    opacity: 0;
+}
+
+.ng-view.ng-hide-add {
+    transition-duration: 500ms;
+    -webkit-transition-duration: 500ms;
+    opacity: 1;
+}
+
+.ng-view.ng-hide-add.ng-hide-add-active {
+    opacity: 0;
+}
+
+.ng-view.ng-hide-remove {
+    transition-duration: 500ms;
+    -webkit-transition-duration: 500ms;
+    display: block !important;
+    opacity: 0;
+}
+
+.ng-view.ng-hide-remove.ng-hide-remove-active {
+    opacity: 1;
+}
