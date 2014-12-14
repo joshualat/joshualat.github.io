@@ -36,11 +36,21 @@ body {
   transform: translateY(-50%);
 
   font-size: 30px;
+  letter-spacing: 1px;
+}
+
+.slide .content span.blue {
+  color: #268bd2;
+}
+
+.slide .content span.red {
+  color: #DD2222;
 }
 
 .slide .content pre {
   font-size: 15px;
-  margin-left: 50px;
+  width: 700px;
+  margin: auto;
 }
 
 .slide {

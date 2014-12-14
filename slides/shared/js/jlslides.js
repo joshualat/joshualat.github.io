@@ -406,6 +406,24 @@ jlslides.directive("slideprogress", function () {
   };
 })
 
+jlslides.directive("blue", function () {
+  return {
+    restrict: "E",
+    transclude: true,
+    replace: true,
+    template: '<span class="blue" ng-transclude></span>'
+  }
+})
+
+jlslides.directive("red", function () {
+  return {
+    restrict: "E",
+    transclude: true,
+    replace: true,
+    template: '<span class="red" ng-transclude></span>'
+  }
+})
+
 jlslides.controller("HomeCtrl", function ($scope, $routeParams, $shared, JLSlides) {
   JLSlides.setHomePage();
 });

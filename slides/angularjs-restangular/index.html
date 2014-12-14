@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <title>AngularJS: Restangular</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlslides.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+  </head>
+
+  <body ng-app="jlslides" ng-cloak slidekeys>
+    <slide title="Introduction" link="intro" page="1">
+      <blue>Backbone.js</blue> has models and collections. <br />
+      <blue>Ember.js</blue> has Ember Data and ember-model. <br />
+      What about <red>AngularJS</red>?
+    </slide>
+
+    <slide title="Introduction" link="intro" page="2">
+      <red>$resource</red> for data models?
+      <prism class="language-javascript">
+        angular.module('login').provider('User', function() {
+          this.$get = ['$resource', function($resource) {
+            var User = $resource('http://localhost:8080/user/:_id', {}, {
+              update: {
+                method: 'PUT'
+              }
+            })
+
+            return User;
+          }];
+        });
+      </prism>
+    </slide>
+
+    <slide title="Introduction" link="intro" page="3">
+      Hello <red>Restangular</red>!<br />
+      <prism class="language-javascript">
+        // GET: /users
+        Restangular.all('users').getList()  
+        .then(function(users) {
+          $scope.user = users[0]; 
+        })
+
+        // GET: /users/1/items
+        $scope.user.getList('items');  
+
+        // POST: /users/1/customMessage
+        $scope.user.customMessage();  
+
+        // Complex Queries
+        // GET: /user/1/messages/1/from/12/starred
+        $scope.user.one('emails', 1).one('from', 12).getList('starred');
+      </prism>
+    </slide>
+
+    <slide title="Restangular vs $resource" link="Restangular vs Resource"></slide>
+    <slide title="Set Up" link="setup" page="1"></slide>
+    <slide title="Set Up" link="setup" page="2"></slide>
+
+    <slide title="Examples" link="example" page="1"></slide>
+    <slide title="Examples" link="example" page="2"></slide>
+    <slide title="Examples" link="example" page="3"></slide>
+    <slide title="Examples" link="example" page="4"></slide>
+    <slide title="Examples" link="example" page="5"></slide>
+    <slide title="Examples" link="example" page="6"></slide>
+
+    <slide title="Configuration" link="config" page="1"></slide>
+    <slide title="Configuration" link="config" page="2"></slide>
+
+    <slide title="Decoupled Service" link="decoupled-service" page="1"></slide>
+    <slide title="Decoupled Service" link="decoupled-service" page="2"></slide>
+    <slide title="Using Values in Template" link="using-values"></slide>
+    <slide title="URL Building" link="url-building"></slide>
+
+    <slide title="Custom Methods" link="custom-methods" page="1"></slide>
+    <slide title="Custom Methods" link="custom-methods" page="2"></slide>
+
+    <slidenav title="AngularJS: Restangular"></slidenav>
+    <div class="ng-view"></div>
+    <slideprogress></slideprogress>
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/angular-route/angular-route.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/angular-animate/angular-animate.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+    <script type="text/javascript" src="../shared/js/jlslides.js"></script>
+  </body>
+</html>
