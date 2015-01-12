@@ -52,27 +52,87 @@
       </prism>
     </slide>
 
-    <slide title="Restangular vs $resource" link="restangular-vs-resource"></slide>
-    <slide title="Set Up" link="setup" page="1"></slide>
-    <slide title="Set Up" link="setup" page="2"></slide>
+    <slide title="Restangular vs $resource" link="restangular-vs-resource" page="1">
+      The <blue>$resource factory</blue> takes away the pain of writing <br />boilerplate code using <blue>$http</blue>
+      <br /><br /><blue>$resource</blue> does not let you do much once the data is transferred to <br />the JavaScript application and any custom behavior will <br />require a lot of boilerplate code
+    </slide>
 
-    <slide title="Examples" link="example" page="1"></slide>
-    <slide title="Examples" link="example" page="2"></slide>
-    <slide title="Examples" link="example" page="3"></slide>
-    <slide title="Examples" link="example" page="4"></slide>
-    <slide title="Examples" link="example" page="5"></slide>
-    <slide title="Examples" link="example" page="6"></slide>
+    <slide title="Restangular vs $resource" link="restangular-vs-resource" page="2">
+      <blue>Restangular</blue> is a library that reduces unnecessary <br /> boilerplate code to write a simple query. <br /><br />
+      It also supports nested resources and there's no need to create a <br />separate <blue>$resource</blue> object for each request.
+    </slide>
 
-    <slide title="Configuration" link="config" page="1"></slide>
-    <slide title="Configuration" link="config" page="2"></slide>
+    <slide title="Set Up" link="setup">
+      <prism class="language-javascript">
+        // Add as a dependency
+        angular.module('sample-app', ['restangular']);
 
-    <slide title="Decoupled Service" link="decoupled-service" page="1"></slide>
-    <slide title="Decoupled Service" link="decoupled-service" page="2"></slide>
-    <slide title="Using Values in Template" link="using-values"></slide>
-    <slide title="URL Building" link="url-building"></slide>
+        angular.module('sample-app').controller('SampleCtrl', function($scope, Restangular) {
+          // ...
+        });
+      </prism>
+    </slide>
 
-    <slide title="Custom Methods" link="custom-methods" page="1"></slide>
-    <slide title="Custom Methods" link="custom-methods" page="2"></slide>
+    <slide title="Examples" link="example" page="1">
+      <prism class="language-javascript">
+        // GET /users/100/properties/200/tiles/300
+        Restangular
+          .one("users", 100)
+          .one("properties", 200)
+          .one("tiles", 300)
+          .get();
+
+        // POST /users/100/properties/200/tiles
+        Restangular
+          .one("users", 100)
+          .one("properties", 200)
+          .all("tiles")
+          .post({name: "New Tile"});
+      </prism>
+    </slide>
+    <slide title="Examples" link="example" page="2">
+      <prism class="language-javascript">
+        // DELETE /users/100
+        Restangular
+          .one("users", 100)
+          .remove();
+
+        // DELETE /users/100/properties/200/tiles/300
+        Restangular
+          .one("users", 100)
+          .one("properties", 200)
+          .one("tiles", 300)
+          .remove();
+      </prism>
+    </slide>
+
+    <slide title="Decoupled Service" link="decoupled-service">
+      <prism class="language-javascript">
+        // Declare factory
+        module.factory('Accounts', function(Restangular) {
+          return Restangular.service('accounts');
+        });
+
+        ...
+        Accounts.one(2).get() // GET to /accounts/2
+        Accounts.post({ data }) // POST to /accounts
+        ...
+      </prism>
+    </slide>
+
+    <slide title="Using Values in Template" link="using-values">
+      <prism class="language-javascript">
+        $scope.students = Restangular.all('students').getList().$object;
+
+        &lt;tr ng-repeat="student in students"&gt;
+          &lt;td&gt;{{student.name}}&lt;/td&gt;
+        &lt;/tr&gt;
+      </prism>
+    </slide>
+
+    <slide title="References" link="references">
+      <a href="https://github.com/mgonto/restangular">https://github.com/mgonto/restangular</a>
+    </slide>
 
     <slidenav title="AngularJS: Restangular"></slidenav>
     <div class="ng-view"></div>
