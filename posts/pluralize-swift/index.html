@@ -41,7 +41,7 @@
       </pre>
 
       <br />
-      The implementation of the String extension is based from <a href="http://api.rubyonrails.org/classes/ActiveSupport/Inflector/Inflections.html" target="_blank">Ruby's ActiveSupport::Inflector#inflections</a>. An array of (RegEx) rules is prepared first then each rule is tested against the word to be pluralized.
+      The implementation of the String extension is based from <a href="http://api.rubyonrails.org/classes/ActiveSupport/Inflector/Inflections.html" target="_blank">Ruby's ActiveSupport::Inflector#inflections</a>. An array of (RegEx) rules is prepared first then each rule is tested against the word to be pluralized. Pluralize.swift makes use of <span class="focus">NSRegularExpression</span> and the <span class="focus">stringByReplacingMatchesInString</span> method for its replace operations.
 
       <br /><br />
       <pre>
@@ -100,7 +100,7 @@
       </pre>
 
       <br />
-      Finally, I added a couple of type methods to allow the addition of custom rules.
+      Finally, I added a couple of type methods to allow the addition of custom rules. These methods simply update the <span class="focus">sharedInstance singleton</span> with new rules.
       <br /><br />
 
       <pre>
@@ -116,6 +116,21 @@
         
         public class func unchanging(word: String) {
             sharedInstance.unchanging(word)
+        }
+
+        ...
+
+        public class var sharedInstance : Pluralize {
+            struct Static {
+                static var onceToken : dispatch_once_t = 0
+                static var instance : Pluralize? = nil
+            }
+            
+            dispatch_once(&Static.onceToken) {
+                Static.instance = Pluralize()
+            }
+            
+            return Static.instance!
         }
         </code>
       </pre>
