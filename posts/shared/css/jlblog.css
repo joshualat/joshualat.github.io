@@ -17,6 +17,10 @@ body {
   user-select: none; 
 }
 
+body.grid {
+  background-image: url("../images/black_lozenge.png");
+}
+
 body.blue {
   background: #c5deea; /* Old browsers */
   background: -moz-linear-gradient(-45deg,  #c5deea 0%, #8abbd7 31%, #066dab 100%); /* FF3.6+ */
