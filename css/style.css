@@ -39,6 +39,19 @@ body {
   border-bottom-color: rgba(70,70,80,0.5);
 }
 
+.sub-header {
+  background-color: black;
+  color: white;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  top: 40px;
+  left: 0px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(70,70,80,0.5); 
+}
+
 .hide {
   display: none;
 }
@@ -83,7 +96,7 @@ body {
 }
 
 .hexbutton {
-  width: 50px;
+  width: 25%;
   border-width: 0px;
   cursor: pointer;
   font-size: 10px;
@@ -92,11 +105,12 @@ body {
   color: white;
   background-color: rgba(50,50,50,0.7); 
   vertical-align: middle;
-  outline:none;
-  height: 30px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: rgba(150,150,150,0.1);
+  outline: none;
+  height: 4px;
+  border-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(150,150,150,0.1);
+  float: left;
 }
 
 .hexbutton:hover {
