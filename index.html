@@ -26,12 +26,14 @@
     <div class="header">
       <img id="jllogo" src="images/JL.png" width="40px" height="40px"/>
 
-      <hexbutton category="one">Back-end Development</hexbutton>
-      <hexbutton category="two">Front-end Development</hexbutton>
-      <hexbutton category="three">Solution Architecture</hexbutton>
-      <hexbutton category="four">Everything Else</hexbutton>
-      
-      <input ng-model="filter" class="filter-tiles" placeholder="Filter"/>
+      <div class="slide-right">
+        <hexbutton category="one"></hexbutton>
+        <hexbutton category="two"></hexbutton>
+        <hexbutton category="three"></hexbutton>
+        <hexbutton category="four"></hexbutton>
+      </div>
+
+      <div class="clear"></div>
     </div>
     <div class="content">
       <div class="menu" id="menu-{{ message.category }}" ng-repeat="message in data.messageArray">

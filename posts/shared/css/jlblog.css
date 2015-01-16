@@ -1,0 +1,82 @@
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+html { 
+  overflow:hidden; 
+}
+
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+  background-color: #202020;
+  overflow-x: hidden;
+  font-size: 11px;
+  margin: 0px;
+  padding: 0px;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none; /* Webkit */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE 10  */
+  -o-user-select: none;
+  user-select: none;  
+}
+
+.clear {
+  clear: both;
+}
+
+.blog-nav {
+  background-color: black;
+  color: white;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  top: 0px;
+  left: 0px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(70,70,80,0.5);
+}
+
+.blog-nav #jllogo {
+  float: left;
+  margin-left: 10px;
+}
+
+.blog-number {
+  float: right;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 20px;
+  margin-top: 10px;
+}
+
+.blog-title {
+  float: left;
+  margin-left: 10px;
+  margin-top: 5px;
+  text-align: center;
+
+  width: 350px;
+  border-width: 0px;
+  cursor: pointer;
+  font-size: 12px;
+  letter-spacing: 3px;
+  font-weight: bold;
+  line-height: 30px;
+  padding: 0px 0px;
+  color: white;
+  background: #222328;
+  text-transform: uppercase;
+  vertical-align: middle;
+  outline: none;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: rgba(150,150,150,0.1);
+  text-decoration: none;
+}
+
+.blog-title:hover {
+  background-color: #261100;
+}
