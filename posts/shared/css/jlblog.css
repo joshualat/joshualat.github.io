@@ -2,24 +2,41 @@
   display: none !important;
 }
 
-html { 
-  overflow:hidden; 
-}
-
 body {
   font-family: 'Source Sans Pro', sans-serif;
-  background-color: #202020;
   overflow-x: hidden;
   font-size: 11px;
   margin: 0px;
-  padding: 0px;
+  padding: 0px 0px 80px 0px;
 
   -webkit-touch-callout: none;
   -webkit-user-select: none; /* Webkit */
   -moz-user-select: none;    /* Firefox */
   -ms-user-select: none;     /* IE 10  */
   -o-user-select: none;
-  user-select: none;  
+  user-select: none; 
+}
+
+body.blue {
+  background: #c5deea; /* Old browsers */
+  background: -moz-linear-gradient(-45deg,  #c5deea 0%, #8abbd7 31%, #066dab 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,#c5deea), color-stop(31%,#8abbd7), color-stop(100%,#066dab)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(-45deg,  #c5deea 0%,#8abbd7 31%,#066dab 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(-45deg,  #c5deea 0%,#8abbd7 31%,#066dab 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(-45deg,  #c5deea 0%,#8abbd7 31%,#066dab 100%); /* IE10+ */
+  background: linear-gradient(135deg,  #c5deea 0%,#8abbd7 31%,#066dab 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c5deea', endColorstr='#066dab',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+body.orange {
+  background: #ffaf4b; /* Old browsers */
+  background: -moz-linear-gradient(-45deg,  #ffaf4b 0%, #f7541d 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,#ffaf4b), color-stop(100%,#f7541d)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(-45deg,  #ffaf4b 0%,#f7541d 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(-45deg,  #ffaf4b 0%,#f7541d 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(-45deg,  #ffaf4b 0%,#f7541d 100%); /* IE10+ */
+  background: linear-gradient(135deg,  #ffaf4b 0%,#f7541d 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffaf4b', endColorstr='#f7541d',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
 
 .clear {
@@ -79,4 +96,44 @@ body {
 
 .blog-title:hover {
   background-color: #261100;
+}
+
+.content {
+  color: black;
+  margin-top: 100px;
+  width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: rgba(240, 240, 240, 0.8);
+
+  color: #111;
+  font-size: 17px;
+  line-height: 30px;
+  padding: 20px 50px 40px 50px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(150,150,150,0.1);
+  border-radius: 5px;
+  text-align: justify;
+}
+
+.content .topic-container {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.content .topic {
+  border-width: 0px;
+  font-size: 20px;
+  line-height: 40px;
+  padding: 10px 50px;
+  color: white;
+  background-color: rgba(10,10,10,0.9);
+  vertical-align: middle;
+  outline: none;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: rgba(150,150,150,0.1);
+  margin-bottom: 10px;
+  letter-spacing: 2px;
 }
