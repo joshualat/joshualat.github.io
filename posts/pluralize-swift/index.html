@@ -3,10 +3,11 @@
     <title>Pluralize.swift | JL Blog</title>
     <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
     <link rel="stylesheet" type="text/css" href="../shared/css/jlblog.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
     <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
   </head>
 
-  <body class="orange">
+  <body class="blue">
     <div class="blog-nav">
       <a href="http://joshualat.com">
         <img id="jllogo" src="../shared/images/JL.png" width="40px" height="40px">
@@ -19,33 +20,130 @@
     <div class="content">
       <div class="topic-container"><span class="topic">Pluralize.swift</span></div>
 
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent nec velit aliquet, varius eros vitae, condimentum quam. Curabitur consequat, tellus non vestibulum iaculis, odio nulla venenatis leo, vitae elementum arcu neque quis lorem. Phasellus lorem orci, condimentum nec suscipit in, pretium sed magna. Sed pellentesque vel dui sit amet scelerisque. Sed dui tortor, ornare sed venenatis ac, iaculis in sem. Ut accumsan arcu non massa auctor rutrum. Phasellus feugiat aliquam sapien, ut tempus odio tincidunt vitae. Donec semper sagittis turpis vitae fringilla. Donec a facilisis sem. Sed nulla nulla, euismod non mi ut, suscipit viverra odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed faucibus metus ac est commodo, venenatis tincidunt erat varius. Ut et mattis orci, ut hendrerit est.
+      After learning the <span class="focus">Swift programming language</span>, I realized that there isn't an existing Swift extension that converts a singular word to its plural form. I decided to write <a href="https://github.com/joshualat/Pluralize.swift" target="_blank">Pluralize.swift</a>.
 
       <br /><br />
 
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent nec velit aliquet, varius eros vitae, condimentum quam. Curabitur consequat, tellus non vestibulum iaculis, odio nulla venenatis leo, vitae elementum arcu neque quis lorem. Phasellus lorem orci, condimentum nec suscipit in, pretium sed magna. Sed pellentesque vel dui sit amet scelerisque. Sed dui tortor, ornare sed venenatis ac, iaculis in sem. Ut accumsan arcu non massa auctor rutrum. Phasellus feugiat aliquam sapien, ut tempus odio tincidunt vitae. Donec semper sagittis turpis vitae fringilla. Donec a facilisis sem. Sed nulla nulla, euismod non mi ut, suscipit viverra odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed faucibus metus ac est commodo, venenatis tincidunt erat varius. Ut et mattis orci, ut hendrerit est.
+      <pre>
+        <code class="language-swift">
+
+          import Pluralize
+
+          "Person".pluralize()
+          // People
+
+          "Wolf".pluralize(count: 1)
+          // Wolf
+
+          "Person".pluralize(with: "Persons")
+          // Persons
+        </code>
+      </pre>
+
+      <br />
+      The implementation of the String extension is based from <a href="http://api.rubyonrails.org/classes/ActiveSupport/Inflector/Inflections.html" target="_blank">Ruby's ActiveSupport::Inflector#inflections</a>. An array of (RegEx) rules is prepared first then each rule is tested against the word to be pluralized.
 
       <br /><br />
+      <pre>
+        <code class="language-swift">
 
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent nec velit aliquet, varius eros vitae, condimentum quam. Curabitur consequat, tellus non vestibulum iaculis, odio nulla venenatis leo, vitae elementum arcu neque quis lorem. Phasellus lorem orci, condimentum nec suscipit in, pretium sed magna. Sed pellentesque vel dui sit amet scelerisque. Sed dui tortor, ornare sed venenatis ac, iaculis in sem. Ut accumsan arcu non massa auctor rutrum. Phasellus feugiat aliquam sapien, ut tempus odio tincidunt vitae. Donec semper sagittis turpis vitae fringilla. Donec a facilisis sem. Sed nulla nulla, euismod non mi ut, suscipit viverra odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed faucibus metus ac est commodo, venenatis tincidunt erat varius. Ut et mattis orci, ut hendrerit est.
+          rule("$", with:"$1s")
+          rule("s$", with:"$1ses")
+          rule("(r|l|b)y$", with:"$1ies")
+          rule("x$", with:"$1xes")
+          rule("(sh|zz|ss)$", with:"$1es")
+          rule("(ax)is", with: "$1es")
+          rule("(cact|nucle|alumn|bacill|fung|radi|stimul|syllab)us$", with:"$1i")
+          rule("(corp)us$", with:"$1ora")
+          rule("sis$", with:"$1ses")
+          rule("ch$", with:"$1ches")
+          rule("o$", with:"$1os")
+          rule("(buffal|carg|mosquit|torped|zer|vet|her|ech)o$", with:"$1oes")
 
+          unchanging("sheep")
+          unchanging("deer")
+          unchanging("moose")
+          unchanging("swine")
+          unchanging("bison")
+          unchanging("corps")
+          unchanging("means")
+          unchanging("series")
+          unchanging("scissors")
+          unchanging("species")
+        </code>
+      </pre>
+
+      <br />
+
+      Extensions in Swift are easy to write. I added a type method called <span class="focus">pluralize</span> that accepts 2 optional parameters: the count and the replacement String.
+
+      <br />
+      <br />
+
+      <pre>
+        <code class="language-swift">
+
+        extension String {
+            public func pluralize(count: Int = 2, with: String = "") -> String {
+                if count == 1 {
+                    return self
+                } else {
+                    if countElements(with) != 0 {
+                        return with
+                    } else {
+                        return Pluralize.apply(self)
+                    }
+                }
+            }
+        }
+        </code>
+      </pre>
+
+      <br />
+      Finally, I added a couple of type methods to allow the addition of custom rules.
       <br /><br />
 
-      <div class="topic-container"><span class="topic">Pluralize.swift</span></div>
+      <pre>
+        <code class="language-swift">
 
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent nec velit aliquet, varius eros vitae, condimentum quam. Curabitur consequat, tellus non vestibulum iaculis, odio nulla venenatis leo, vitae elementum arcu neque quis lorem. Phasellus lorem orci, condimentum nec suscipit in, pretium sed magna. Sed pellentesque vel dui sit amet scelerisque. Sed dui tortor, ornare sed venenatis ac, iaculis in sem. Ut accumsan arcu non massa auctor rutrum. Phasellus feugiat aliquam sapien, ut tempus odio tincidunt vitae. Donec semper sagittis turpis vitae fringilla. Donec a facilisis sem. Sed nulla nulla, euismod non mi ut, suscipit viverra odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed faucibus metus ac est commodo, venenatis tincidunt erat varius. Ut et mattis orci, ut hendrerit est.
+        public class func rule(rule: String, with template: String) {
+            sharedInstance.rule(rule, with: template)
+        }
+        
+        public class func uncountable(word: String) {
+            sharedInstance.uncountable(word)
+        }
+        
+        public class func unchanging(word: String) {
+            sharedInstance.unchanging(word)
+        }
+        </code>
+      </pre>
 
+      <br />
+      This allows users to do the following:
       <br /><br />
 
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent nec velit aliquet, varius eros vitae, condimentum quam. Curabitur consequat, tellus non vestibulum iaculis, odio nulla venenatis leo, vitae elementum arcu neque quis lorem. Phasellus lorem orci, condimentum nec suscipit in, pretium sed magna. Sed pellentesque vel dui sit amet scelerisque. Sed dui tortor, ornare sed venenatis ac, iaculis in sem. Ut accumsan arcu non massa auctor rutrum. Phasellus feugiat aliquam sapien, ut tempus odio tincidunt vitae. Donec semper sagittis turpis vitae fringilla. Donec a facilisis sem. Sed nulla nulla, euismod non mi ut, suscipit viverra odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed faucibus metus ac est commodo, venenatis tincidunt erat varius. Ut et mattis orci, ut hendrerit est.
+      <pre>
+        <code class="language-swift">
 
-      <br /><br />
+        Pluralize.rule("(p)erson$", with: "$1ersons")
 
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent nec velit aliquet, varius eros vitae, condimentum quam. Curabitur consequat, tellus non vestibulum iaculis, odio nulla venenatis leo, vitae elementum arcu neque quis lorem. Phasellus lorem orci, condimentum nec suscipit in, pretium sed magna. Sed pellentesque vel dui sit amet scelerisque. Sed dui tortor, ornare sed venenatis ac, iaculis in sem. Ut accumsan arcu non massa auctor rutrum. Phasellus feugiat aliquam sapien, ut tempus odio tincidunt vitae. Donec semper sagittis turpis vitae fringilla. Donec a facilisis sem. Sed nulla nulla, euismod non mi ut, suscipit viverra odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed faucibus metus ac est commodo, venenatis tincidunt erat varius. Ut et mattis orci, ut hendrerit est.
+        ...
 
-      <br /><br />
+        "Person".pluralize()
+        // Persons
+        "Spokesperson".pluralize()
+        // Spokespersons
+        </code>
+      </pre>
+
+      <br />
+
+      For more information, click <a href="https://github.com/joshualat/Pluralize.swift" target="_blank">here</a>.
     </div>
 
     <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
   </body>
 </html>

@@ -137,3 +137,20 @@ body.orange {
   margin-bottom: 10px;
   letter-spacing: 2px;
 }
+
+.content a {
+  color: #17A086;
+  text-decoration: none;
+}
+
+.content a:hover {
+  color: #ef8852;
+}
+
+.content pre {
+  background-color: #202020;
+}
+
+.content span.focus {
+  color: #327388;
+}
