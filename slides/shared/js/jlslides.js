@@ -343,7 +343,7 @@ jlslides.directive("slidetitle", function () {
     restrict: "E",
     transclude: true,
     replace: true,
-    template: '<a class="slide-title" href="#/">{{ $shared.currentPageTitle }}</a>'
+    template: '<a class="slide-title" href="http://joshualat.com/blog/">{{ $shared.currentPageTitle }}</a>'
   };
 })
 
