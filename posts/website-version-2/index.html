@@ -1,0 +1,88 @@
+<html>
+  <head>
+    <title>Website Version 2.0 | JL Blog</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlblog.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+    <meta name="description" content="Joshua Lat. Personal website of Joshua Arvin Lat." />
+    <meta name="keywords" content="joshua lat, joshualat, arvin, www.joshualat.com, joshua arvin lat" />
+    <meta name="author" content="Joshua Lat, admin@joshualat.com" />
+    <meta name="google-site-verification" content="XLIWgE7t9h07bUrVuvb3YnEroNOZpBRkBeEJb_D1KXg" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32022116-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body class="grid">
+    <div class="blog-nav">
+      <a href="http://joshualat.com">
+        <img id="jllogo" src="../shared/images/JL.png" width="40px" height="40px">
+      </a>
+
+      <div class="blog-title" href="#/">JL Website V 2.0</div>
+      <div class="clear"></div>
+    </div>
+
+    <div class="content">
+      <div class="topic-container"><span class="topic">New Look</span></div>
+      I decided to start off 2015 with an upgrade of my website. I made use of <a href="https://pages.github.com/" target="_blank">GitHub pages</a> to build a static website since it was free per GitHub account.
+      <br /><br />
+
+      <img src="./images/new-look.png" width="890px" />
+
+      <br /><br />
+      I built the site using <span class="focus">AngularJS</span>, <span class="focus">Bower</span>, <span class="focus">Prism.js</span>, and <span class="focus">CSS3 Transitions</span>. You can view the source code of the website <a href="https://github.com/joshualat/joshualat.github.io" target="_blank">here</a>.
+
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">JLSlides</span></div>
+
+      I've also included my own <span class="focus">JavaScript Presentation Framework</span> called <span class="focus">JLSlides</span> so I can compile all my slides in one location. Here's one of my recent presentations using <span class="focus">JLSlides</span>. You can view the slides <a href="http://joshualat.com/slides/angularjs-restangular/" target="_blank">here</a>.
+
+      <br /><br />
+      <img src="./images/jlslides.png" width="890px" />
+      <br /><br />
+
+      Slides are easy to make using <span class="focus">JLSlides</span>. I used AngularJS directives to simplify the markup content. <span class="focus">Prism.js</span> takes care of syntax highlighting of the code samples.
+
+      <br /><br />
+
+      <pre>
+        <code class="language-markup">
+
+  &lt;slide title=&quot;Restangular vs $resource&quot; link=&quot;restangular-vs-resource&quot; page=&quot;1&quot;&gt;
+    The &lt;blue&gt;$resource factory&lt;/blue&gt; takes away the pain of writing 
+    &lt;br /&gt;boilerplate code using &lt;blue&gt;$http&lt;/blue&gt;
+
+    &lt;br /&gt;&lt;br /&gt;&lt;blue&gt;$resource&lt;/blue&gt; does not let you do much once the 
+    data is transferred to &lt;br /&gt;the JavaScript application and any custom 
+    behavior will &lt;br /&gt;require a lot of boilerplate code
+  &lt;/slide&gt;
+        </code>
+      </pre>
+
+      <br />
+      You can view the source code of the project <a href="https://github.com/joshualat/jlslides" target="_blank">here</a>.
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">Moving Forward</span></div>
+      Over the next couple of weeks, I'll be adding more content to the site. Feel free to email me at <span class="focus">joshua.arvin.lat@gmail.com</span> if you have questions or suggestions.
+
+    </div>
+
+    <br /><br />
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+  </body>
+</html>
