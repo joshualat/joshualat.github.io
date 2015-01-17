@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <title>AngularJS Shared Factory | JL Blog</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlblog.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+    <meta name="description" content="Joshua Lat. Personal website of Joshua Arvin Lat." />
+    <meta name="keywords" content="joshua lat, joshualat, arvin, www.joshualat.com, joshua arvin lat, angularjs, shared factory, shared service" />
+    <meta name="author" content="Joshua Lat, admin@joshualat.com" />
+    <meta name="google-site-verification" content="XLIWgE7t9h07bUrVuvb3YnEroNOZpBRkBeEJb_D1KXg" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32022116-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body class="grid">
+    <div class="blog-nav">
+      <a href="http://joshualat.com">
+        <img id="jllogo" src="../shared/images/JL.png" width="40px" height="40px">
+      </a>
+
+      <div class="blog-title" href="#/">AngularJS $shared</div>
+      <div class="clear"></div>
+    </div>
+
+    <div class="content">
+      <div class="topic-container"><span class="topic">AngularJS $shared</span></div>
+      To make life easier for some AngularJS developers, they sometimes use the <span class="focus">$rootScope</span> to store data. To be fair, <span class="focus">AngularJS scopes</span> are a bit tricky at first and sometimes do not work according to plan. It is not a good idea to pollute the <span class="focus">$rootScope</span> and should only be used in certain scenarios. I decided to write a wrapper service / factory for this reason.
+
+      <br /><br />
+
+      <pre><code class="language-javascript">
+
+      $shared.set('someKey', 'hello!')
+      $shared.get('someKey')
+
+      $shared.watch('someKey', function(newVal) {
+        alert(newVal);
+      });
+
+      $shared.on($scope, "someSignal", function(event, data) {
+        alert(data)
+      });
+
+      $shared.emit("someSignal", "someMessage");
+      </code></pre>
+
+      <br />
+      The <span class="focus">$shared</span> factory / service is only around 50 lines of code but it includes some of the best practices and tweaks when using the <span class="focus">$rootScope</span>.
+      
+
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">Source Code</span></div>
+      You can view the source code <a href="https://github.com/joshualat/angularjs-shared-service" target="_blank">here</a>.
+    </div>
+
+    <br /><br />
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+  </body>
+</html>
