@@ -1,0 +1,139 @@
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+  overflow-x: hidden;
+  font-size: 11px;
+  margin: 0px;
+  padding: 0px 0px 80px 0px;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none; /* Webkit */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE 10  */
+  -o-user-select: none;
+  user-select: none;
+
+  background-image: url("../images/feathers.png");
+}
+
+a {
+  text-decoration: none;
+}
+
+.clear {
+  clear: both;
+}
+
+.blog-nav {
+  background-color: black;
+  color: white;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  top: 0px;
+  left: 0px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(70,70,80,0.5);
+}
+
+.blog-nav #jllogo {
+  float: left;
+  margin-left: 10px;
+}
+
+.blog-title {
+  float: left;
+  margin-left: 10px;
+  margin-top: 5px;
+  text-align: center;
+
+  width: 350px;
+  border-width: 0px;
+  cursor: pointer;
+  font-size: 12px;
+  letter-spacing: 3px;
+  font-weight: bold;
+  line-height: 30px;
+  padding: 0px 0px;
+  color: white;
+  background: #222328;
+  text-transform: uppercase;
+  vertical-align: middle;
+  outline: none;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: rgba(150,150,150,0.1);
+  text-decoration: none;
+}
+
+.blog-title:hover {
+  background-color: #261100;
+}
+
+.unequal-grid {
+  width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 100px;
+  background-color: blue;
+}
+
+.unequal-grid .third {
+  width: 300px;
+  min-height: 10px;
+  background-color: red;
+  float: left;
+}
+
+.unequal-grid .vert-1 {
+  margin-right: 30px;
+}
+
+.unequal-grid .vert-3 {
+  margin-left: 30px;
+}
+
+.tile-container {
+  width: 300px;
+  padding: 0px;
+  margin: 0px;
+}
+
+.tile-container {
+  cursor: pointer;
+  background-color: white;
+  border-radius: 5px;
+}
+
+a.tile * {
+  text-decoration: none !important;
+}
+
+.tile-container:hover {
+  background-color: #FFFFEE;
+}
+
+.tile-container .title-bar {
+  font-weight: bold;
+  width: 260px;
+  padding: 10px 20px;
+  font-size: 15px;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #333;
+}
+
+.tile-container .description-bar {
+  width: 250px;
+  padding: 25px 25px 40px;
+  line-height: 24px;
+  font-size: 12px;
+  text-decoration: none;
+  letter-spacing: 1px;
+  color: #333;
+}
