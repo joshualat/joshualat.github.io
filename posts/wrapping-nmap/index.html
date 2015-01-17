@@ -1,0 +1,202 @@
+<html>
+  <head>
+    <title>Wrapping Nmap | JL Blog</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlblog.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+    <meta name="description" content="Joshua Lat. Personal website of Joshua Arvin Lat." />
+    <meta name="keywords" content="joshua lat, joshualat, arvin, www.joshualat.com, joshua arvin lat, nmap, python, wrap, sonar" />
+    <meta name="author" content="Joshua Lat, admin@joshualat.com" />
+    <meta name="google-site-verification" content="XLIWgE7t9h07bUrVuvb3YnEroNOZpBRkBeEJb_D1KXg" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32022116-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body class="grid">
+    <div class="blog-nav">
+      <a href="http://joshualat.com">
+        <img id="jllogo" src="../shared/images/JL.png" width="40px" height="40px">
+      </a>
+
+      <div class="blog-title" href="#/">Wrapping Nmap</div>
+      <div class="clear"></div>
+    </div>
+
+    <div class="content">
+      <div class="topic-container"><span class="topic">Hard Time using Nmap?</span></div>
+      <span class="focus">Nmap: Network Mapper</span> is a free yet powerful tool for network discovery and security auditing.
+      <br /><br />
+      Last year, I needed to find a way to organize my Nmap search results using Python without installing additional libraries such as <span class="focus">python-nmap</span>. Nmap also had too many options and I don't think I can memorize all of them.
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">BATSONAR</span></div>
+      I made a wrapper tool called <span class="focus">Busy Administrator's Toolbox: Search Optimizer for Network and Application Resources</span>. 
+
+      <br /><br />
+
+      <pre>
+        <code class="language-bash">
+
+      batsonar -r1 192.168.0.1/24                  (recipe 1)
+      batsonar -r1,2,3 -a1,2,3 -p- 192.168.0.5     (recipes 1, 2 & 3 on all ports) 
+      batsonar -r1 -o xml 192.168.0.7              (xml output format)
+
+      batsonar -x -r1 192.168.0.1                  (execute query)
+
+      batsonar -R                                  (show recipes)
+      batsonar -A                                  (show additional options)
+      batsonar -S                                  (show scripts)
+        </code>
+      </pre>
+
+      <br />
+
+      It aims to provide common Nmap recipes while allowing the user to create custom recipes from existing ones. It also saves the results of the scans for later viewing in corresponding folders.
+
+      <br /><br />
+      <pre>
+        <code class="language-python">
+
+      RECIPES = {
+          '0': [' '],                                # empty recipe
+          '1': ['-A'],
+          '2': ['-sV'],
+          '3': ['-F', '-A'],
+          '4': ['-sV', '--version-intensity 9'],
+          '5': ['-sS', '-sU', '-A'],
+          '6': ['-A', '-v'],
+          '7': ['-A', '-O'],
+          '8': ['-sN'],
+          '9': ['-sF'],
+          '10': ['-sX'],
+          '11': ['-sO'],
+          '12': ['-sR'],
+          '13': ['-sU'],
+          '14': ['-sP'],
+          '15': ['-sA'],
+          '16': ['-sT'],
+          '17': ['-sP', '-PP'],
+          '18': ['-sP', '-PM'],  
+          '19': ['-O', '--osscan-guess'],
+          '20': ['-A', '-O', '--osscan-guess'],
+          '21': ['-PY'],
+          '22': ['--scanflags SYNURG'],
+          '23': ['-PO'],
+          '24': ['-sP', '-PR'],
+          '25': ['-sP', '-PS'],
+          '26': ['-n', '-T4', '-sP', '-PE', 
+                 '-PS21,22,23,25,80,113,31339', '-PA80,113,443,10042']
+      }
+        </code>
+      </pre>
+
+      <br />
+      The base options can be combined with additional options for advanced scans. 
+
+      <br /><br />
+
+      <pre>
+        <code class="language-python">
+
+      ADDITIONAL = {
+          '1': ['-F'],
+          '2': ['-A'],
+          '3': ['-v'],
+          '4': ['-p-'],
+          '5': ['-n'],
+          '6': ['-vv'],
+          '7': ['-n', '-v'],
+          '8': ['-PN'],
+          '9': ['--stats-every 5s'],
+          '10': ['--stats-every 10s'],
+          '11': ['-sV'],
+          '12': ['-r'],
+          '13': ['--open'],
+          '14': ['-T4'],
+          '15': ['-sS'],
+          '16': ['-n', '--stats-every 10s'],
+          '17': ['-n', '-p-', '--stats-every 10s'],
+          '18': ['-n', '-p-', '-vv'],
+          '19': ['--top-ports 100'],
+          '20': ['--top-ports 500'],
+          '21': ['--top-ports 1000'],
+          '22': ['-n', '-v', '-r'],
+          '23': ['-n', '-p-', '-r'],
+          '24': ['--reason'],
+          '25': ['-T4', '-n', '--stats-every 10s']
+      }
+        </code>
+      </pre>
+
+      <br />
+      With that, you can write a short command to replace a long <span class="focus">nmap</span> command using the wrapper. 
+      <br /><br />
+
+      <pre><code class="language-bash">
+
+      batsonar -r1,2,3 -a1,2,3,25 -p- 192.168.0.5
+      nmap -A -sV -F -v -T4 -n --stats-every 10s -p- 192.168.0.5
+      </code></pre>
+
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">Nmap Scripts</span></div>
+
+      I've also added some common <span class="focus">Nmap</span> scripts. Take note that most of these scripts are primarily used for noisy scans and should only be used on your own test environments.
+      <br /><br />
+
+      <pre><code class="language-python">
+
+      SCRIPTS = {
+          '1': ['--script version,discovery'],
+          '2': ['--script vuln'],
+          '3': ['--script auth'],
+          '4': ['--script default'],
+          '5': ['--script safe'],
+          '6': ['--script http*'],
+          '7': ['--script broadcast', '--script-args targets-sniffer.timeout 30'],
+          '8': ['--script ipidseq', '-n'],
+          '9': ['--script http-methods', '--script-args http-methods.retest'],
+          '10': ['--script sniffer-detect'],
+          '11': ['--script telnet*'],
+          '12': ['--script jdwp*'],
+          '13': ['--script sshv'],
+          '14': ['--script http-phpself-xss,http-unsafe-output-escaping', 
+                 '--script-args httpspider.maxpagecount=200'],
+          '15': ['--script http-slowloris-check'],
+          '16': ['--script mysql*'],
+          '17': ['--script oracle*'],
+          '18': ['--script ms-sql*'],
+          '19': ['--script mongodb*'],
+          '20': ['--script couchdb*'],
+          '21': ['--script smtp*'],
+          '22': ['--script imap*'],
+          '23': ['--script smb*'],
+          '24': ['--script ftp*'],
+          '25': ['--script irc*']
+      }
+      </code></pre>
+
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">Source Code</span></div>
+      You can view the source code <a href="https://gist.github.com/busy-administrator/9862f96a98e549c6d2f4" target="_blank">here</a>.
+    </div>
+
+    <br /><br />
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+  </body>
+</html>
