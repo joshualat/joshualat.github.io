@@ -18,7 +18,7 @@ body {
 }
 
 body.grid {
-  background-image: url("../images/crossword.png");
+  background-image: url("../images/feathers.png");
 }
 
 body.blue {
@@ -109,6 +109,7 @@ body.orange {
   margin-left: auto;
   margin-right: auto;
   background-color: rgba(240, 240, 240, 0.2);
+  background-image: url("../images/crossword.png");
 
   color: #111;
   font-size: 17px;
@@ -117,7 +118,7 @@ body.orange {
   border-bottom-style: solid;
   border-bottom-width: 1px;
   border-bottom-color: rgba(150,150,150,0.1);
-  border-radius: 5px;
+  border-radius: 15px;
   text-align: justify;
   letter-spacing: 1px;
 }
