@@ -1,0 +1,158 @@
+<html>
+  <head>
+    <title>Teaching Ruby on Rails | JL Blog</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlblog.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+    <meta name="description" content="Joshua Lat. Personal website of Joshua Arvin Lat." />
+    <meta name="keywords" content="joshua lat, joshualat, arvin, www.joshualat.com, joshua arvin lat, ruby, rails, ruby on rails" />
+    <meta name="author" content="Joshua Lat, admin@joshualat.com" />
+    <meta name="google-site-verification" content="XLIWgE7t9h07bUrVuvb3YnEroNOZpBRkBeEJb_D1KXg" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32022116-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body class="grid">
+    <div class="blog-nav">
+      <a href="http://joshualat.com">
+        <img id="jllogo" src="../shared/images/JL.png" width="40px" height="40px">
+      </a>
+
+      <div class="blog-title" href="#/">Teaching Ruby on Rails</div>
+      <div class="clear"></div>
+    </div>
+
+    <div class="content">
+      <div class="topic-container"><span class="topic">4-day training course</span></div>
+
+      Last year, I was invited to teach the <span class="focus">Ruby programming language</span> and the <span class="focus">Rails framework</span> to UP Computer Science students. <span class="focus">UP Center for Student Innovations (CSI)</span> needed a resource speaker for 4 Saturdays and I happened to be available on those dates.
+
+      <br /><br />
+      <img src="./images/trainer.png" />
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">Teaching Ruby</span></div>
+
+      Teaching the basics of a new programming language is a challenge. It is crucial for the students to learn <span class="focus">Ruby</span> without getting bored since it would be hard to learn <span class="focus">Rails</span> without learning Ruby first.
+
+      <br /><br />
+
+      <pre>
+        <code class="language-ruby">
+
+          # display Hello World
+          puts "Hello World"
+
+          # get string input from the user
+          x = gets
+
+          # display value of x
+          puts x
+        </code>
+      </pre>
+
+      <br />
+
+      I decided to teach Ruby by example and make the students solve the problems in pairs. Prizes were given to those who were able to solve the quizzes. Pair programming, pressure, and incentives allow students to learn faster. <span class="italic">They may hate the pressure but it makes them learn a lot faster</span>.
+
+      <br /><br />
+
+      Most of the students knew <span class="focus">Python</span> already so I included a couple of slides on how to convert <span class="focus">Python</span> to <span class="focus">Ruby</span>.
+
+      <br /><br />
+
+      <pre>
+        <code class="language-python">
+
+          #!/usr/bin/python
+
+          for i in [1, 2, 3, 4, 5, 6]:
+              print i
+
+              if i == 3:
+                  print "The value of i is 3"
+
+              if i == 5:
+                  print "The value of i is 5"
+        </code>
+      </pre>
+
+      <br />
+      The hardest parts to teach are <span class="focus">Blocks, Procs, & Lambdas</span>. I told the students that Procs and Lambdas are the same except for a couple of rules. <span class="focus">Lambdas</span> check the number of arguments while <span class="focus">Procs</span> do not. The <span class="italic">return</span> keyword is also treated differently.
+      <br /><br />
+
+      <pre>
+        <code class="language-ruby">
+
+          def lambda_no_return
+            lm = lambda { return }
+            lm.call
+            puts "lambda did not return"
+          end
+
+          def proc_return
+            pr = Proc.new { return }
+            pr.call
+            puts "proc did not return"
+          end
+
+          lambda_no_return
+          proc_return
+        </code>
+      </pre>
+
+      <br />
+
+      I ended the session with a couple of real world examples and taught them a few lessons on how to refactor code.
+
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">Teaching Rails</span></div>
+
+      Teaching Rails involves teaching <span class="focus">the MVC: Model-View-Controller</span> pattern and how Rails applications are created and maintained. I started off with why most web developers should use a web framework instead of building their own. I also shared some of my experiences as a web developer so that the students are aware of some misconceptions they might have.
+
+      <br /><br />
+
+      I focused on how the <span class="focus">MVC pattern</span> works. I gave a real world scenario and told them that the <span class="focus">MVC pattern</span> attempts to separate the concerns to make code easier to maintain.
+
+      <br /><br />
+      <img src="./images/real-world-scenario.png" width="890px" />
+      <br /><br />
+
+      I presented a simplified diagram of the <span class="focus">MVC pattern</span> so that those who were new to the concept would understand the topic easily. It is critical for the students to understand the <span class="focus">MVC pattern</span> first before they try out the Rails framework.
+
+      <br /><br />
+      <img src="./images/simplified-mvc.png" width="890px" />
+      <br /><br />
+
+      The rest of the lecture series involved web application development with the <span class="focus">Rails framework</span>. The students got to try out first how the <span class="focus">View</span> and the <span class="focus">Controller</span> interacts without the <span class="focus">Model</span> aspect. After a couple of steps, they were able to transfer some of the lines of code from the <span class="focus">Controller</span> to the <span class="focus">Model</span> components.
+
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">Experience</span></div>
+
+      As a trainer, I learned a lot of things during the 4-day training course. I realized that I had to limit each module to 20 minutes and allow the students to participate by writing code and solving problems on their own. <span class="focus">Ten minute breaks</span> were also necessary to make sure that the students do not get bored while learning the important parts.
+
+      <br /><br />
+
+      Teaching is fun and it feels great when your students are applying the things they learned.
+
+    </div>
+
+    <br /><br />
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+  </body>
+</html>

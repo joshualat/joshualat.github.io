@@ -119,6 +119,7 @@ body.orange {
   border-bottom-color: rgba(150,150,150,0.1);
   border-radius: 5px;
   text-align: justify;
+  letter-spacing: 1px;
 }
 
 .content .topic-container {
@@ -157,4 +158,13 @@ body.orange {
 
 .content span.focus {
   color: #327388;
+}
+
+.content span.italic {
+  font-style: italic;
+  color: #327388;
+}
+
+.content img {
+  border-radius: 10px;
 }
