@@ -117,6 +117,18 @@ a.tile * {
   color: #333;
 }
 
+.tile-container .slides-ribbon {
+  width: 260px;
+  padding: 5px 20px;
+  font-size: 15px;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  text-align: center;
+  background-color: #232323;
+  color: #CCC;
+}
+
 .tile-container .description-bar {
   width: 250px;
   padding: 30px 25px 50px;
