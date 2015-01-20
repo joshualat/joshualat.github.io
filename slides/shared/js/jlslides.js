@@ -406,6 +406,15 @@ jlslides.directive("slideprogress", function () {
   };
 })
 
+jlslides.directive("big", function () {
+  return {
+    restrict: "E",
+    transclude: true,
+    replace: true,
+    template: '<span class="big" ng-transclude></span>'
+  }
+})
+
 jlslides.directive("blue", function () {
   return {
     restrict: "E",

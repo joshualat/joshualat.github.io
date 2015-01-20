@@ -1,0 +1,141 @@
+<html>
+  <head>
+    <title>AngularJS: Digest Loop</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlslides.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+    <meta name="description" content="Joshua Lat. Personal website of Joshua Arvin Lat." />
+    <meta name="keywords" content="joshua lat, joshualat, arvin, www.joshualat.com, joshua arvin lat, angularjs, digest loop" />
+    <meta name="author" content="Joshua Lat, admin@joshualat.com" />
+    <meta name="google-site-verification" content="XLIWgE7t9h07bUrVuvb3YnEroNOZpBRkBeEJb_D1KXg" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32022116-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body ng-app="jlslides" ng-cloak slidekeys>
+    <slide title="Introduction" link="intro">
+      When the <blue>scope model</blue> changes, the view updates automatically. <br />
+      How does <red>AngularJS</red> do that?
+    </slide>
+
+    <slide title="Digest Loop" link="digest-loop" page="1">
+      <blue><big>$digest loop</big></blue>
+    </slide>
+
+    <slide title="Digest Loop" link="digest-loop" page="2">
+      What happens during the <red>$digest</red> loop?
+    </slide>
+
+    <slide title="Digest Loop" link="digest-loop" page="3">
+      All <blue>$watch(ed) expressions</blue> are checked for model mutations<br />
+      If a mutation is detected, the <red>$watch listener</red> is called.
+
+      <prism class="language-javascript">
+        $scope.$watch('variable', function (newVal, oldVal) {
+            if (!newVal) return;
+
+            ...
+
+            console.log('value changed!')
+        });
+      </prism>
+    </slide>
+
+    <slide title="Digest Loop" link="digest-loop" page="4">
+      <blue><big>$digest loop</big></blue>
+
+      <br />
+
+      <big>Do it <red>10x</red> (max)</big>
+
+      <prism class="language-javascript">
+        $scope.$watch('variable1', function (newVal, oldVal) {
+            if (!newVal) return;
+
+            $scope.variable2 = variable1 * 2
+        });
+
+        $scope.$watch('variable2', function (newVal, oldVal) {
+            if (!newVal) return;
+
+            $scope.variable3 = variable2 + 3
+        });
+      </prism>
+    </slide>
+
+    <slide title="Angular Execution Context" link="angular-execution-context" page="1">
+      <big><blue>Angular Execution Context</blue></big>
+      <br /><br />
+      data-binding
+      <br />
+      exception handling
+      <br />
+      property watching
+    </slide>
+
+    <slide title="Angular Execution Context" link="angular-execution-context" page="2">
+      <big><red>When not in Angular Execution Context?</red></big>
+      <br /><br />
+      Use <blue>$apply</blue> to trigger the <blue>$digest loop</blue>
+    </slide>
+
+    <slide title="$scope.$apply" link="$scope.$apply">
+      <red>$scope.$apply()</red> is a way to gain access to the <br /><blue>Angular Execution Context</blue>
+      <br />
+      <prism class="language-javascript">
+                $scope.$apply('variable = "value"');
+                
+                $scope.$apply(function(scope) {
+                    scope.variable = 'value';
+                });
+                
+                $scope.$apply(function(){
+                    $scope.variable = 'value';
+                });
+
+                $scope.$apply()
+      </prism>
+    </slide>
+
+    <slide title="$evalAsync" link="$evalAsync" page="1">
+      <red>$evalAsync</red> allows functions or expressions to be <br />
+      run sometime in the future (during the <blue>$digest</blue> loop) <br />
+      before the browser renders
+      <br />
+      
+      <prism class="language-javascript">
+                scope.$evalAsync(function() {
+
+                  ... do something ...
+
+                });
+      </prism>
+
+    </slide>
+
+    <slide title="$evalAsync" link="$evalAsync" page="2">
+      <big><blue>$digest loop</blue><br /> = <br /><red>$evalAsync loop</red> + <red>$watch loop</red></big>
+    </slide>
+
+    <slidenav title="AngularJS: Digest Loop"></slidenav>
+    <div class="ng-view"></div>
+    <slideprogress></slideprogress>
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/angular-route/angular-route.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/angular-animate/angular-animate.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+    <script type="text/javascript" src="../shared/js/jlslides.js"></script>
+  </body>
+</html>

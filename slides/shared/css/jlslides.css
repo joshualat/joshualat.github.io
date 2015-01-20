@@ -43,6 +43,10 @@ body {
   color: #268bd2;
 }
 
+.slide .content span.big {
+  font-size: 50px;
+}
+
 .slide .content span.red {
   color: #DD2222;
 }
