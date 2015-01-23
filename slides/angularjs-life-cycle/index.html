@@ -1,0 +1,112 @@
+<html>
+  <head>
+    <title>AngularJS Life Cycle</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlslides.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+    <meta name="description" content="Joshua Lat. Personal website of Joshua Arvin Lat." />
+    <meta name="keywords" content="joshua lat, joshualat, arvin, www.joshualat.com, joshua arvin lat, angularjs, angularjs lifecycle, angularjs life cycle" />
+    <meta name="author" content="Joshua Lat, admin@joshualat.com" />
+    <meta name="google-site-verification" content="XLIWgE7t9h07bUrVuvb3YnEroNOZpBRkBeEJb_D1KXg" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32022116-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body ng-app="jlslides" ng-cloak slidekeys>
+    <slide title="Introduction" link="intro">
+      It is time we get a deeper understanding of the 
+      <br /> <blue>AngularJS life cycle</blue>
+      <br /> <br />
+      <big><red>WHY?</red></big>
+    </slide>
+
+    <slide title="Why?" link="why">
+      When building complex <blue>AngularJS</blue> applications, <br />
+      it is important to understand how <blue>AngularJS</blue> <br />
+      accomplishes much of its <red>magic</red>
+    </slide>
+
+    <slide title="Major Parts" link="major-parts">
+      <align>
+        <big>
+          
+            <blue>I.</blue> Preparation<br />
+            <blue>II.</blue> Compile & Link<br />
+            <blue>III.</blue> Render<br />
+            <blue>IV.</blue> Digest Cycle
+          </blue>
+        </big>
+      </align>
+    </slide>
+
+    <slide title="I. Preparation" link="preparation">
+      <align>
+        <red>I. Preparation</red><br />
+        <blue>
+          A. Load CSS and JS files along with the Application Code<br />
+          B. Document ready event is fired<br />
+          C. Bootstrap: AngularJS searches for ng-app attribute in the HTML<br />
+        </blue>
+      </align>
+    </slide>
+
+    <slide title="II. Compile & Link" link="compile-link">
+      <align>
+        <red>II. Compile & Link</red><br />
+        <blue>
+          A. Compile: AngularJS searches for directives<br />
+          B. Directive code is executed<br />
+          C. Link function is generated for each directive<br />
+          D. Link function is combined with the scope<br />
+        </blue>
+      </align>
+    </slide>
+
+    <slide title="III. Render" link="render">
+      <align>
+        <red>III. Render</red><br />
+        <blue>
+          A. Variables in scope are displayed in the UI<br />
+          B. Controllers are instantiated with own scope<br />
+          C. Watchers and Listeners are added<br />
+          D. UI is now interactive
+        </blue>
+      </align>
+    </slide>
+
+    <slide title="IV. Digest Cycle" link="digest-cycle">
+      <align>
+        <big>
+          <red>IV. Digest Cycle</red><br />
+          <blue>
+            A. Event is triggered<br />
+            B. Digest Cycle is run
+          </blue>
+        </big>
+      </align>
+    </slide>
+
+
+
+    <slidenav title="AngularJS: Digest Loop"></slidenav>
+    <div class="ng-view"></div>
+    <slideprogress></slideprogress>
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/angular-route/angular-route.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/angular-animate/angular-animate.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+    <script type="text/javascript" src="../shared/js/jlslides.js"></script>
+  </body>
+</html>

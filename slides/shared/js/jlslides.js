@@ -433,6 +433,15 @@ jlslides.directive("red", function () {
   }
 })
 
+jlslides.directive("align", function () {
+  return {
+    restrict: "E",
+    transclude: true,
+    replace: true,
+    template: '<div class="align" ng-transclude></div>'
+  }
+})
+
 jlslides.controller("HomeCtrl", function ($scope, $routeParams, $shared, JLSlides) {
   JLSlides.setHomePage();
 });
