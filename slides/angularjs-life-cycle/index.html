@@ -50,7 +50,13 @@
       </align>
     </slide>
 
-    <slide title="I. Preparation" link="preparation">
+    <slide title="Preparation" link="preparation" page="1">
+      <big>
+        <blue>I. Preparation</blue>
+      </big>
+    </slide>
+
+    <slide title="Preparation" link="preparation" page="2">
       <align>
         <red>I. Preparation</red><br />
         <blue>
@@ -61,7 +67,13 @@
       </align>
     </slide>
 
-    <slide title="II. Compile & Link" link="compile-link">
+    <slide title="Compile & Link" link="compile-link" page="1">
+      <big>
+        <blue>II. Compile & Link</blue>
+      </big>
+    </slide>
+
+    <slide title="Compile & Link" link="compile-link" page="2">
       <align>
         <red>II. Compile & Link</red><br />
         <blue>
@@ -69,29 +81,69 @@
           B. Directive code is executed<br />
           C. Link function is generated for each directive<br />
           D. Link function is combined with the scope<br />
+          E. Variables in scope are displayed in the UI<br />
         </blue>
       </align>
     </slide>
 
-    <slide title="III. Render" link="render">
+    <slide title="Compile & Link" link="compile-link" page="3">
+      <align>
+        <big><red>What?</red></big>
+        <br /><br />
+        - The <blue>$compile</blue> service collects all the directives then combines all linking functions into a single function<br /><br />
+        - The <blue>link function</blue> attaches the scope to the DOM
+      </align>
+    </slide>
+
+    <slide title="Render" link="render" page="1">
+      <big>
+        <blue>III. Render</blue>
+      </big>
+    </slide>
+
+    <slide title="Render" link="render" page="2">
       <align>
         <red>III. Render</red><br />
         <blue>
-          A. Variables in scope are displayed in the UI<br />
-          B. Controllers are instantiated with own scope<br />
-          C. Watchers and Listeners are added<br />
-          D. UI is now interactive
+          A. Controllers are instantiated with own scope<br />
+          B. Watchers and Listeners are added<br />
+          C. UI is now interactive
         </blue>
       </align>
     </slide>
 
-    <slide title="IV. Digest Cycle" link="digest-cycle">
+    <slide title="Digest Cycle" link="digest-cycle" page="1">
+      <big>
+        <blue>IV. Digest Cycle</blue>
+      </big>
+    </slide>
+
+    <slide title="Digest Cycle" link="digest-cycle" page="2">
       <align>
         <big>
           <red>IV. Digest Cycle</red><br />
           <blue>
             A. Event is triggered<br />
             B. Digest Cycle is run
+          </blue>
+        </big>
+      </align>
+    </slide>
+
+    <slide title="Digest Cycle" link="digest-cycle" page="3">
+      <big>
+        <blue>Digest Cycle</blue> = <red>Angular's own event loop</red>
+      </big>
+    </slide>
+
+    <slide title="Review" link="review">
+      <align>
+        <big>
+          
+            <blue>I.</blue> Preparation<br />
+            <blue>II.</blue> Compile & Link<br />
+            <blue>III.</blue> Render<br />
+            <blue>IV.</blue> Digest Cycle
           </blue>
         </big>
       </align>
