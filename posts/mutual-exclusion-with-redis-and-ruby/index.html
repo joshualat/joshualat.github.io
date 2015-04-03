@@ -38,6 +38,13 @@
         <span class="topic">Mutual Exclusion with Redis and Ruby</span>
       </div>
 
+      Redis is usually used for caching in web applications. About 2 or 3 years ago, we encountered a concurrency issue that forced us to protect a document without relying on database locks. We did some research and found out that Redis can be used to implement a <span class="focus">distributed mutex</span>.
+
+      <br /><br />
+      If the concept is new, think of the <span class="focus">mutex (mutual exclusion)</span> as a key to a room and only one person can use the room at a time. If another person needs to enter the room, that person needs to wait for the person inside the room to come out first and release the key.
+
+      <br /><br />
+
       <div class="topic-container">
         <span class="topic">The Problem</span>
       </div>
@@ -164,7 +171,7 @@
       </pre>
 
       <br />
-      What happened? A race condition occured because <span class="focus">@resource.value</span> has been changed by another thread while its current value is being used in another. Unfortunately, the final value is 20 which is not the expected result.
+      What happened? A race condition occured because <span class="focus">@resource.value</span> has been changed by another thread while its current value is being used in another. Unfortunately, the final value is 20 which is not the expected result. This is a big issue if you're not using atomic fields such as counters.
       <br /><br />
 
       <div class="topic-container">
@@ -272,7 +279,9 @@
       </pre>
 
       <br />
-      If the concept is new, think of the mutex as a key to a room and only one person can use the room at a time. If another person needs to enter the room, that person needs to wait for the person inside the room to come out first and release the key.
+
+      Take note that locks make your code slower so it is important to know how to use locks properly. For example, it is sometimes unnecessary to wrap a big block of code inside a lock if the update is atomic. Remember that the goal of locks is to protect your data and not code. You may be also tempted to lock the entire table. Most of the time you will only need to lock the entry or row. Finally, it is critical that you are aware that locking is just one the several ways to solve concurrency issues. 
+      
       <br /><br />
 
     </div>
