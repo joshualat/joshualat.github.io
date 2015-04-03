@@ -1,0 +1,283 @@
+<html>
+  <head>
+    <title>Mutual Exclusion with Redis and Ruby | JL Blog</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlblog.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+    <meta name="description" content="Joshua Lat. Personal website of Joshua Arvin Lat." />
+    <meta name="keywords" content="joshua lat, joshualat, arvin, www.joshualat.com, joshua arvin lat, mutex, distributed mutex, mutex with redis, redis mutex" />
+    <meta name="author" content="Joshua Lat, admin@joshualat.com" />
+    <meta name="google-site-verification" content="XLIWgE7t9h07bUrVuvb3YnEroNOZpBRkBeEJb_D1KXg" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32022116-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body class="grid">
+    <div class="blog-nav">
+      <a href="http://joshualat.com">
+        <img id="jllogo" src="../shared/images/JL.png" width="40px" height="40px">
+      </a>
+
+      <a class="blog-title" href="http://joshualat.com/blog/">Mutual Exclusion with Redis and Ruby</a>
+      <div class="clear"></div>
+    </div>
+
+    <div class="content">
+      <div class="topic-container">
+        <span class="topic">Mutual Exclusion with Redis and Ruby</span>
+      </div>
+
+      <div class="topic-container">
+        <span class="topic">The Problem</span>
+      </div>
+
+      Suppose we have a simple <span class="focus">Resource</span> class with 2 fields: label and value. We create a resource called "Shared Resource" with the initial value of zero. This resource will later be processed by multiple processors at the same time.
+
+      <br /><br />
+
+      <pre>
+        <code class="language-ruby">
+
+          class Resource
+            include Mongoid::Document
+
+            field :label, type: String
+            field :value, type: Integer, default: 0
+          end
+
+          # create a shared resource
+          resource = Resource.new(label: "Shared Resource", value: 0)
+          resource.save
+        </code>
+      </pre>
+
+      <br />
+      We then create a class which processes the resource we created earlier. The method <span class="focus">some_operation!</span> simply assigns the value of the resource to a temporary variable, adds 10 to it, and finally saves the new value to the same resource.
+
+      <br /><br />
+
+      <pre>
+        <code class="language-ruby">
+
+          class ResourceProcessor
+            def initialize(resource: resource)
+              @resource = resource
+            end
+
+            def some_operation!
+              sleep(rand())
+                  
+              @resource.reload
+              puts "A"
+
+              temp_storage = @resource.value
+              sleep(rand())
+
+              puts "B"
+
+              @resource.value = temp_storage + 10
+              @resource.save
+
+              puts "C"
+              puts @resource.value
+            end
+          end
+        </code>
+      </pre>
+
+      <br />
+      We add the method <span class="focus">process!</span> which creates 5 threads and executes them in a concurrent manner.
+      <br /><br />
+
+      <pre>
+        <code class="language-ruby">
+
+          class ResourceProcessor
+            ...
+
+            def process!
+              threads = []
+
+              5.times do
+                threads << Thread.new do
+                  some_operation!
+                end
+              end
+
+              threads.each do |thread|
+                thread.join
+              end
+
+              @resource.reload
+              puts @resource.value
+            end
+
+            ...
+          end
+        </code>
+      </pre>
+
+      <br />
+      Finally, we execute the following lines of code to see the update process in action. We pass the resource to the <span class="focus">ResourceProcessor</span> and run the <span class="focus">process!</span> method.
+      <br /><br />
+
+      <pre>
+        <code class="language-ruby">
+
+          processor = ResourceProcessor.new(resource: resource)
+          processor.process!
+
+          # OUTPUT:
+          # A
+          # A
+          # B
+          # C
+          # 10
+          # A
+          # B
+          # C
+          # 20
+          # B
+          # C
+          # 10
+          # A
+          # A
+          # B
+          # C
+          # 20
+          # B
+          # C
+          # 20
+          # FINAL VALUE: 20
+        </code>
+      </pre>
+
+      <br />
+      What happened? A race condition occured because <span class="focus">@resource.value</span> has been changed by another thread while its current value is being used in another. Unfortunately, the final value is 20 which is not the expected result.
+      <br /><br />
+
+      <div class="topic-container">
+        <span class="topic">The Solution</span>
+      </div>
+
+      To solve this problem, it is necessary to lock the resource with a mutex lock. <span class="focus">Mutex (or Mutual Exclusion)</span> ensures that no two concurrent processes are processing the same resource at the same time. 
+      <br /><br />
+      We'll be using the <a href="https://github.com/dv/redis-semaphore" target="_blank">redis-semaphore gem</a> to wrap our method in a mutex lock. 
+
+      <br /><br />
+
+      <pre>
+        <code class="language-ruby">
+
+          class ResourceProcessor
+            ...
+
+            def lock
+              mutex = Redis::Semaphore.new(@resource.id, 
+                                           connection: ENV['REDIS_HOST'], 
+                                           port: ENV['REDIS_PORT'])
+
+              mutex.lock do
+                puts "LOCK: START"
+                yield
+                puts "LOCK: END"
+              end
+            end
+
+            ...
+
+            def process!
+              threads = []
+
+              5.times do
+                threads << Thread.new do
+                  lock do
+                    some_operation!
+                  end
+                end
+              end
+
+              threads.each do |thread|
+                thread.join
+              end
+
+              @resource.reload
+              puts @resource.value
+            end
+
+            ...
+          end
+        </code>
+      </pre>
+
+      <br />
+      We simply use the ID of the resource as the key. This means that 2 processors can process two different resources at the same time since the keys are different.
+
+      <br /><br />
+
+      After applying the lock, the other threads need to wait until lock is released. This way, no race conditions will happen since the resource is protected by the lock. After the last thread has finished executing, the final value of the Resource is 50 as expected.
+
+      <br /><br />
+
+      <pre>
+        <code class="language-ruby">
+
+          processor = ResourceProcessor.new(resource: resource)
+          processor.process!
+
+          # OUTPUT:
+          # LOCK: START
+          # A
+          # B
+          # C
+          # 10
+          # LOCK: END
+          # LOCK: START
+          # A
+          # B
+          # C
+          # 20
+          # LOCK: END
+          # LOCK: START
+          # A
+          # B
+          # C
+          # 30
+          # LOCK: END
+          # LOCK: START
+          # A
+          # B
+          # C
+          # 40
+          # LOCK: END
+          # LOCK: START
+          # A
+          # B
+          # C
+          # 50
+          # LOCK: END
+          # FINAL VALUE: 50
+        </code>
+      </pre>
+
+      <br />
+      If the concept is new, think of the mutex as a key to a room and only one person can use the room at a time. If another person needs to enter the room, that person needs to wait for the person inside the room to come out first and release the key.
+      <br /><br />
+
+    </div>
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+  </body>
+</html>
