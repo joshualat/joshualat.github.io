@@ -37,8 +37,9 @@
       <div class="topic-container">
         <span class="topic">How Inodes Work</span>
       </div>
-
-      
+      What's an inode and how do inodes work?
+      <br /><br />
+      Let's begin by showing a simple user-level representation of the Unix filesystem. We can see that we have 2 directories named <span class="focus">directory_1</span> and <span class="focus">directory_2</span>. The first directory <span class="focus">directory_1</span> has 3 files in it and the second directory <span class="focus">directory_2</span> has 2 files in it. The file <span class="focus">file_5</span> is a hard link of <span class="focus">file_3</span>.
 
       <br /><br />
 
@@ -57,11 +58,21 @@
         </code>
       </pre>
 
+      <br />
+      Here's how the inode database looks like. An inode is simply a data structure that stores the details of a specific file such as the type (file or directory), the permissions, and the location where the data can be found. If the inode is a directory, it contains links to the inodes of the files and directories inside the said directory.
+      <br /><br />
+
       <pre>
         <code class="language-ruby">
 
     # Inode structure
     [ inode number | links | type ]
+    [    102309498 |     5 |  dir ]          | name           | inode_number |
+                                             | .              |    102309498 |
+                                             | ..             |       436084 |
+                                             | directory_1    |    102309506 |
+                                             | directory_2    |    102309509 |
+
     [    102309506 |     5 |  dir ]          | name           | inode_number |
                                              | .              |    102309506 |
                                              | ..             |    102309498 |
@@ -79,15 +90,19 @@
                                              | file_5         |    102309517 |
 
     [    102309520 |     1 | file ]
-    [    102317571 |     1 | file ]
         </code>
       </pre>
+
+      <br />
+      The left side is the inode table and the right side is the data pool where each directory inode is pointing to. The inode table contains the inode number, the link count, and the type of inode. The data pool contains the name and inode number of the items inside the directory. Looks complicated?
+      <br /><br />
+      To help us better understand how inodes work, let's create a simple <span class="focus">Ruby</span> script that emulates how the inode structure works. The script has 3 parts: the <span class="focus">Inode</span> class, the <span class="focus">InodeReader</span> module, and the <span class="focus">InodeViewer</span> module.
+      <br /><br />
 
       <div class="topic-container">
         <span class="topic">The Inode class</span>
       </div>
 
-      <br />
       We start by creating the <span class="focus">Inode</span> class. Each inode instance has an inode number, a link count, a type, and a name. The inode number is the unique key to the table row. The link count is the number of total directory entries that point to the specific inode. The type can either be <span class="focus">:file</span> or <span class="focus">:dir</span>. The name is the filename or directory name.
       <br /><br />
 
@@ -205,28 +220,40 @@
         <code class="language-ruby">
 
     module InodeReader
-      def self.perform(directory: nil)
+      def self.perform(directory: nil, root: true)
         Dir.chdir(directory) if directory
 
         ls_output_string = `ls -1ila .`
         ls_info = process_ls(ls_output_string)
 
+        root_inode = nil
+
         ls_info.each do |row|
-          if !(row[:name] == '.' || row[:name] == '..')
-            inode = Inode.new(number: row[:number], 
-                              link_count: row[:link_count], 
-                              type: row[:type], 
-                              name: row[:name])
+          if root && row[:name] == '.'
+            root_inode = Inode.new(number: row[:number], 
+                                   link_count: row[:link_count], 
+                                   type: row[:type], 
+                                   name: row[:name])
 
-            if row[:type] == :dir
-              Dir.chdir(row[:name])
+            root_inode[row[:name]] = row[:number]
+          else
+            root_inode[row[:name]] = row[:number] if root_inode
 
-              directory_data = perform
-              directory_data.each do |row|
-                inode[row[:name]] = row[:number]
+            unless (row[:name] == '.' || row[:name] == '..')
+              inode = Inode.new(number: row[:number], 
+                                link_count: row[:link_count], 
+                                type: row[:type], 
+                                name: row[:name])
+
+              if row[:type] == :dir
+                Dir.chdir(row[:name])
+                directory_data = perform(root: false)
+                directory_data.each do |row|
+                  inode[row[:name]] = row[:number]
+                end
+
+                Dir.chdir('..')
               end
-
-              Dir.chdir('..')
             end
           end
         end
@@ -260,7 +287,7 @@
       </pre>
 
       <br />
-      The lines of code above are simply executed by running <span class="focus">InodeReader.perform</span>
+      The lines of code above are simply executed by running <span class="focus">InodeReader.perform</span> The <span class="focus">InodeReader</span> makes use of the shell command <span class="focus">ls -1ila</span> to display the inode details of the files inside the current directory.
       <br /><br />
 
       <div class="topic-container">
@@ -340,6 +367,12 @@
         <code class="language-ruby">
 
     [ inode number | links | type ]
+    [    102309498 |     5 |  dir ]          | name           | inode_number |
+                                             | .              |    102309498 |
+                                             | ..             |       436084 |
+                                             | directory_1    |    102309506 |
+                                             | directory_2    |    102309509 |
+
     [    102309506 |     5 |  dir ]          | name           | inode_number |
                                              | .              |    102309506 |
                                              | ..             |    102309498 |
@@ -357,18 +390,21 @@
                                              | file_5         |    102309517 |
 
     [    102309520 |     1 | file ]
-    [    102317571 |     1 | file ]
         </code>
       </pre>
 
       <br />
-      The left side is the inode table and the right side is the data pool where each directory inode is pointing to. Notice that the current directory <span class="focus">(.)</span> and the parent directory <span class="focus">(..)</span> are included in the data pool entries.
+      The left side is the inode table and the right side is the data pool where each directory inode is pointing to. Notice that the current directory <span class="focus">(.)</span> and the parent directory <span class="focus">(..)</span> are also included in the data pool entries.
 
       <br /><br />
 
       <div class="topic-container">
         <span class="topic">How the Kernel uses the Inode structure</span>
       </div>
+
+      Now that we have the inode table and the data pool, how do we look for a specific file in the filesystem? Let's visit again the <span class="focus">Inode#get</span> method.
+
+      <br /><br />
 
       <pre>
         <code class="language-ruby">
@@ -392,6 +428,14 @@
     root_dir.get('directory_1/file_1')
         </code>
       </pre>
+
+      <br />
+
+      To examine a specific file inside the filesystem, the path is first split into several components. For example, if we're examining <span class="focus">directory_1/file_1</span>, the path is split into <span class="focus">directory_1</span> and <span class="focus">file_1</span>. We then check the data pool of the root inode for the inode number of <span class="focus">directory_1</span> which is <span class="focus">102309506</span>. Once we have the inode number, we can get the inode of <span class="focus">directory_1</span> from the inode table using the inode number as key. We check the data pool associated with the inode and look for the inode number of <span class="focus">file_1</span>. Finally we get the inode of <span class="focus">file_1</span> from the inode table using the number <span class="focus">102309512</span>.
+
+      <br /><br />
+      It is important to understand how inodes work since filesystem issues occur when there are inconsistencies in the link counts, inode table data, and the block allocation data. It also makes debugging easier when you're having disk space issues.
+      <br /><br />
 
     </div>
 
