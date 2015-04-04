@@ -32,12 +32,12 @@
 
     <div class="unequal-grid">
       <div class="vert-1 third">
-        <a href="../posts/mutual-exclusion-with-redis-and-ruby/" class="tile">
+        <a href="../posts/how-inodes-work/" class="tile">
           <div class="tile-container">
-            <div class="title-bar">Mutex with Redis and Ruby</div>
-            <div class="logo-bar"><img src="../posts/shared/images/cover/mutex-with-redis-and-ruby.png" width="300px" style="background-color: #151313"></div>
+            <div class="title-bar">How Inodes Work</div>
+            <div class="logo-bar"><img src="../posts/shared/images/cover/how-inodes-work.png" width="300px"></div>
             <div class="description-bar">
-              Redis is usually used for caching in web applications. About 2 or 3 years ago, we encountered a concurrency issue that forced us to find a way to protect a document without relying on database locks. We did some research and found out that Redis can be used to implement a distributed mutex.
+              What's an inode and how do inodes work? An inode is simply a data structure that stores the details of a specific file such as the type (file or directory), the permissions, and the location where the data can be found. If the inode is a directory, it contains links to the inodes of the files and directories inside the said directory.
             </div>
           </div>
         </a>
@@ -61,18 +61,6 @@
             </div>
           </div>
         </a>
-      </div>
-
-      <div class="vert-2 third">
-        <a href="../posts/wrapping-nmap/" class="tile">
-          <div class="tile-container">
-            <div class="title-bar">Wrapping Nmap</div>
-            <div class="logo-bar"><img src="../posts/shared/images/cover/wrapping-nmap.png" width="300px"></div>
-            <div class="description-bar">
-              Last year, I needed to find a way to organize my Nmap search results using Python without installing additional libraries such as python-nmap.
-            </div>
-          </div>
-        </a>
 
         <a href="../slides/angularjs-life-cycle/" target="_blank" class="tile">
           <div class="tile-container">
@@ -81,6 +69,28 @@
             <div class="slides-ribbon">SLIDES</div>
             <div class="description-bar">
               It is time we get a deeper understanding of the AngularJS life cycle
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="vert-2 third">
+        <a href="../posts/mutual-exclusion-with-redis-and-ruby/" class="tile">
+          <div class="tile-container">
+            <div class="title-bar">Mutex with Redis and Ruby</div>
+            <div class="logo-bar"><img src="../posts/shared/images/cover/mutex-with-redis-and-ruby.png" width="300px" style="background-color: #151313"></div>
+            <div class="description-bar">
+              Redis is usually used for caching in web applications. About 2 or 3 years ago, we encountered a concurrency issue that forced us to find a way to protect a document without relying on database locks. We did some research and found out that Redis can be used to implement a distributed mutex.
+            </div>
+          </div>
+        </a>
+
+        <a href="../posts/wrapping-nmap/" class="tile">
+          <div class="tile-container">
+            <div class="title-bar">Wrapping Nmap</div>
+            <div class="logo-bar"><img src="../posts/shared/images/cover/wrapping-nmap-2.png" width="300px"></div>
+            <div class="description-bar">
+              Last year, I needed to find a way to organize my Nmap search results using Python without installing additional libraries such as python-nmap.
             </div>
           </div>
         </a>
