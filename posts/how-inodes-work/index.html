@@ -83,6 +83,14 @@
         </code>
       </pre>
 
+      <div class="topic-container">
+        <span class="topic">The Inode class</span>
+      </div>
+
+      <br />
+      We start by creating the <span class="focus">Inode</span> class. Each inode instance has an inode number, a link count, a type, and a name. The inode number is the unique key to the table row. The link count is the number of total directory entries that point to the specific inode. The type can either be <span class="focus">:file</span> or <span class="focus">:dir</span>. The name is the filename or directory name.
+      <br /><br />
+
       <pre>
         <code class="language-ruby">
 
@@ -128,6 +136,8 @@
         </code>
       </pre>
 
+      <br />
+      Whenever a new inode is initialized, the inode automatically gets added to <span class="focus">Inode::TABLE</span>. We've also added convenience methods to the inode instance so that it can behave like a dictionary.
       <br /><br />
 
       <pre>
@@ -144,6 +154,10 @@
 
         </code>
       </pre>
+      <br />
+      The same set of lines are applied to the directories as well. The inode's <span class="focus">directory_hash</span> container is filled with the filenames as keys and inode numbers as values.
+      <br /><br />
+
       <pre>
         <code class="language-ruby">
 
@@ -161,6 +175,10 @@
       </code>
       </pre>
 
+      <br />
+      To add a file inode to the table, the type is just set to <span class="focus">:file.</span>
+      <br /><br />
+
       <pre>
         <code class="language-ruby">
 
@@ -171,6 +189,17 @@
 
         </code>
       </pre>
+
+      <br />
+      Next we create 2 modules: <span class="focus">InodeReader</span> and <span class="focus">InodeViewer</span>. InodeReader is in charge of reading the directory data and filling up the <span class="focus">Inode::TABLE</span>. InodeViewer, on the other hand, is in charge of printing the contents of the <span class="focus">Inode::TABLE</span>.
+      <br /><br />
+
+      <div class="topic-container">
+        <span class="topic">The InodeReader module</span>
+      </div>
+
+      The <span class="focus">InodeReader</span> module recursively goes through all directories inside the current directory and creates an inode entry for each file or directory it encounters.
+      <br /><br />
 
       <pre>
         <code class="language-ruby">
@@ -230,12 +259,13 @@
         </code>
       </pre>
 
-      <pre>
-        <code class="language-ruby">
+      <br />
+      The lines of code above are simply executed by running <span class="focus">InodeReader.perform</span>
+      <br /><br />
 
-    InodeReader.perform
-        </code>
-      </pre>
+      <div class="topic-container">
+        <span class="topic">The InodeViewer module</span>
+      </div>
 
       <pre>
         <code class="language-ruby">
@@ -302,19 +332,8 @@
         </code>
       </pre>
 
-      <br />      
-
-      <br /><br />
-
-      <pre>
-        <code class="language-ruby">
-
-    InodeViewer.perform
-        </code>
-      </pre>
-
       <br />
-
+      The lines of code above are simply executed by running <span class="focus">InodeViewer.perform</span>. Here's an example output of the inode structure. 
       <br /><br />
 
       <pre>
@@ -343,10 +362,36 @@
       </pre>
 
       <br />
+      The left side is the inode table and the right side is the data pool where each directory inode is pointing to. Notice that the current directory <span class="focus">(.)</span> and the parent directory <span class="focus">(..)</span> are included in the data pool entries.
 
-      
-      
       <br /><br />
+
+      <div class="topic-container">
+        <span class="topic">How the Kernel uses the Inode structure</span>
+      </div>
+
+      <pre>
+        <code class="language-ruby">
+
+    class Inode
+      ...
+
+      def get(path)
+        path_array = path.split("/")
+        return_inode = self
+
+        path_array.each do |component|
+          return_inode = self.class::TABLE[return_inode[component]]
+        end
+
+        return_inode
+      end
+    end
+
+    # how to explore specific entries in the filesystem
+    root_dir.get('directory_1/file_1')
+        </code>
+      </pre>
 
     </div>
 
