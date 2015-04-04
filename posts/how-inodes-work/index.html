@@ -1,0 +1,356 @@
+<html>
+  <head>
+    <title>How Inodes Work | JL Blog</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlblog.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+    <meta name="description" content="Joshua Lat. Personal website of Joshua Arvin Lat." />
+    <meta name="keywords" content="joshua lat, joshualat, arvin, www.joshualat.com, joshua arvin lat, mutex, distributed mutex, mutex with redis, redis mutex" />
+    <meta name="author" content="Joshua Lat, admin@joshualat.com" />
+    <meta name="google-site-verification" content="XLIWgE7t9h07bUrVuvb3YnEroNOZpBRkBeEJb_D1KXg" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32022116-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body class="grid">
+    <div class="blog-nav">
+      <a href="http://joshualat.com">
+        <img id="jllogo" src="../shared/images/JL.png" width="40px" height="40px">
+      </a>
+
+      <a class="blog-title" href="http://joshualat.com/blog/">How Inodes Work</a>
+      <div class="clear"></div>
+    </div>
+
+    <div class="content">
+      <div class="topic-container">
+        <span class="topic">How Inodes Work</span>
+      </div>
+
+      
+
+      <br /><br />
+
+      <pre>
+        <code class="language-ruby">
+
+    # User-level representation
+    directory_1:
+    +------------------ file_1
+    +------------------ file_2
+    +------------------ file_3
+
+    directory_2:
+    +------------------ file_4
+    +------------------ file_5
+        </code>
+      </pre>
+
+      <pre>
+        <code class="language-ruby">
+
+    # Inode structure
+    [ inode number | links | type ]
+    [    102309506 |     5 |  dir ]          | name           | inode_number |
+                                             | .              |    102309506 |
+                                             | ..             |    102309498 |
+                                             | file_1         |    102309512 |
+                                             | file_2         |    102309513 |
+                                             | file_3         |    102309517 |
+
+    [    102309512 |     1 | file ]
+    [    102309513 |     1 | file ]
+    [    102309517 |     2 | file ]
+    [    102309509 |     4 |  dir ]          | name           | inode_number |
+                                             | .              |    102309509 |
+                                             | ..             |    102309498 |
+                                             | file_4         |    102309520 |
+                                             | file_5         |    102309517 |
+
+    [    102309520 |     1 | file ]
+    [    102317571 |     1 | file ]
+        </code>
+      </pre>
+
+      <pre>
+        <code class="language-ruby">
+
+    class Inode
+      TABLE = {}
+
+      attr_accessor :number, :link_count, :type, :name
+      attr_accessor :directory_hash
+
+      def initialize(number: number, 
+                     link_count: link_count, 
+                     type: type, name: name)
+
+        @number = number
+        @link_count = link_count
+        @type = type
+        @name = name
+
+        @directory_hash = {}
+
+        TABLE[number] = self
+      end
+
+      def [](key)
+        directory_hash[key]
+      end
+
+      def []=(key, value)
+        directory_hash[key] = value
+      end
+
+      def get(path)
+        path_array = path.split("/")
+        return_inode = self
+
+        path_array.each do |component|
+          return_inode = self.class::TABLE[return_inode[component]]
+        end
+
+        return_inode
+      end
+    end
+        </code>
+      </pre>
+
+      <br /><br />
+
+      <pre>
+        <code class="language-ruby">
+
+    root_dir = Inode.new(number: '99', 
+                         link_count: 4, 
+                         type: :dir, 
+                         name: 'root_dir')
+
+    root_dir['.'] = '99'
+    root_dir['directory_1'] = '100'
+    root_dir['directory_2'] = '500'
+
+        </code>
+      </pre>
+      <pre>
+        <code class="language-ruby">
+
+    directory_1 = Inode.new(number: '100', 
+                            link_count: 2, 
+                            type: :dir, 
+                            name: 'directory_1')
+
+    directory_1['.'] = '100'
+    directory_1['..'] = '99'
+    directory_1['file_1'] = '101'
+    directory_1['file_2'] = '102'
+    directory_1['file_3'] = '103'
+
+      </code>
+      </pre>
+
+      <pre>
+        <code class="language-ruby">
+
+    file_1 = Inode.new(number: '101', 
+                       link_count: 1, 
+                       type: :file, 
+                       name: 'file_1')
+
+        </code>
+      </pre>
+
+      <pre>
+        <code class="language-ruby">
+
+    module InodeReader
+      def self.perform(directory: nil)
+        Dir.chdir(directory) if directory
+
+        ls_output_string = `ls -1ila .`
+        ls_info = process_ls(ls_output_string)
+
+        ls_info.each do |row|
+          if !(row[:name] == '.' || row[:name] == '..')
+            inode = Inode.new(number: row[:number], 
+                              link_count: row[:link_count], 
+                              type: row[:type], 
+                              name: row[:name])
+
+            if row[:type] == :dir
+              Dir.chdir(row[:name])
+
+              directory_data = perform
+              directory_data.each do |row|
+                inode[row[:name]] = row[:number]
+              end
+
+              Dir.chdir('..')
+            end
+          end
+        end
+      end
+
+      private
+
+      def self.process_ls(ls_output_string)
+        detailed_list = ls_output_string.split("\n")
+        output_list = []
+
+        detailed_list.shift
+        detailed_list.each do |row|
+          row_info = row.split(" ")
+
+          number = row_info[0]
+          type = (row_info[1][0] == "d" ? :dir : :file)
+          link_count = row_info[2].to_i
+          name = row_info[-1]
+
+          output_list << { number: number,
+                           type: type,
+                           link_count: link_count,
+                           name: name }
+        end
+
+        output_list
+      end
+    end
+        </code>
+      </pre>
+
+      <pre>
+        <code class="language-ruby">
+
+    InodeReader.perform
+        </code>
+      </pre>
+
+      <pre>
+        <code class="language-ruby">
+
+    module InodeViewer
+      class << self
+        def perform
+          puts inode_header
+          Inode::TABLE.each do |key, value|
+            if value.directory_hash.empty?
+              puts inode_row(value)
+            else
+              puts inode_row(value) + data_pool_row_header
+            end
+
+            value.directory_hash.each do |name, inode_number|
+              puts data_pool_row(name, inode_number)
+            end
+
+            puts "" unless value.directory_hash.empty?
+          end
+        end
+
+        def inode_header
+          "[ %s | %s | %s ]" % [inode_number("inode number"),
+                                link_count("links"),
+                                type("type")]
+        end
+
+        def data_pool_row_header
+          "          | %s | %s |" % [name("name"),
+                                     inode_number("inode_number")]
+        end
+
+        def data_pool_row(name, inode_number)
+          "%40s | %s | %s |" % ["",
+                                name(name),
+                                inode_number(inode_number)]
+        end
+
+        def inode_row(inode)
+          "[ %s | %s | %s ]" % [inode_number(inode.number),
+                                link_count(inode.link_count),
+                                type(inode.type)]
+        end
+
+        def name(text)
+          "%-14s" % text.to_s
+        end
+
+        def inode_number(text)
+          "%12s" % text.to_s
+        end
+
+        def link_count(text)
+          "%5s" % text.to_s
+        end
+
+        def type(text)
+          "%4s" % text.to_s
+        end
+      end
+    end
+        </code>
+      </pre>
+
+      <br />      
+
+      <br /><br />
+
+      <pre>
+        <code class="language-ruby">
+
+    InodeViewer.perform
+        </code>
+      </pre>
+
+      <br />
+
+      <br /><br />
+
+      <pre>
+        <code class="language-ruby">
+
+    [ inode number | links | type ]
+    [    102309506 |     5 |  dir ]          | name           | inode_number |
+                                             | .              |    102309506 |
+                                             | ..             |    102309498 |
+                                             | file_1         |    102309512 |
+                                             | file_2         |    102309513 |
+                                             | file_3         |    102309517 |
+
+    [    102309512 |     1 | file ]
+    [    102309513 |     1 | file ]
+    [    102309517 |     2 | file ]
+    [    102309509 |     4 |  dir ]          | name           | inode_number |
+                                             | .              |    102309509 |
+                                             | ..             |    102309498 |
+                                             | file_4         |    102309520 |
+                                             | file_5         |    102309517 |
+
+    [    102309520 |     1 | file ]
+    [    102317571 |     1 | file ]
+        </code>
+      </pre>
+
+      <br />
+
+      
+      
+      <br /><br />
+
+    </div>
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+  </body>
+</html>
