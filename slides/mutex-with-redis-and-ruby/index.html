@@ -1,0 +1,71 @@
+<html>
+  <head>
+    <title>Mutex with Redis and Ruby</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlslides.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+    <meta name="description" content="Joshua Lat. Personal website of Joshua Arvin Lat." />
+    <meta name="keywords" content="joshua lat, joshualat, arvin, www.joshualat.com, joshua arvin lat, mutex, redis, ruby" />
+    <meta name="author" content="Joshua Lat, admin@joshualat.com" />
+    <meta name="google-site-verification" content="XLIWgE7t9h07bUrVuvb3YnEroNOZpBRkBeEJb_D1KXg" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32022116-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body ng-app="jlslides" ng-cloak slidekeys>
+    <slide title="Introduction" link="intro">
+      When the <blue>scope model</blue> changes, the view updates automatically. <br />
+      How does <red>AngularJS</red> do that?
+    </slide>
+
+    <slide title="Digest Loop" link="digest-loop" page="1">
+      <blue><big>$digest loop</big></blue>
+    </slide>
+
+    <slide title="Digest Loop" link="digest-loop" page="2">
+      What happens during the <red>$digest</red> loop?
+    </slide>
+
+    <slide title="Sample Code" link="code">
+      <prism class="language-ruby">
+        class Resource
+          include Mongoid::Document
+
+          field :label, type: String
+          field :value, type: Integer, default: 0
+        end
+
+        # create a shared resource
+        resource = Resource.new(label: "Shared Resource", value: 0)
+        resource.save
+      </prism>
+    </slide>
+
+    <slide title="Sample Code" link="code2">
+      <prism class="language-ruby">
+        
+      </prism>
+    </slide>
+
+    <slidenav title="AngularJS: Digest Loop"></slidenav>
+    <div class="ng-view"></div>
+    <slideprogress></slideprogress>
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/angular-route/angular-route.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/angular-animate/angular-animate.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+    <script type="text/javascript" src="../shared/js/jlslides.js"></script>
+  </body>
+</html>
