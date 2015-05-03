@@ -1,0 +1,197 @@
+<html>
+  <head>
+    <title>PostgreSQL: Triggers in Action | JL Blog</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlblog.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+    <meta name="description" content="Joshua Lat. Personal website of Joshua Arvin Lat." />
+    <meta name="keywords" content="joshua lat, joshualat, arvin, www.joshualat.com, joshua arvin lat, postgresql, trigger, triggers, postgresql trigger" />
+    <meta name="author" content="Joshua Lat, admin@joshualat.com" />
+    <meta name="google-site-verification" content="XLIWgE7t9h07bUrVuvb3YnEroNOZpBRkBeEJb_D1KXg" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32022116-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body class="grid">
+    <div class="blog-nav">
+      <a href="http://joshualat.com">
+        <img id="jllogo" src="../shared/images/JL.png" width="40px" height="40px">
+      </a>
+
+      <a class="blog-title" href="http://joshualat.com/blog/">PostgreSQL: Triggers in Action</a>
+      <div class="clear"></div>
+    </div>
+
+    <div class="content">
+      <div class="topic-container"><span class="topic">Why use triggers?</span></div>
+      After some time using databases, you will encounter custom functions and triggers. Triggers are used to add automated function calls before or after an event. Triggers may be used for data cleaning, logging, integrity checks, and preventing invalid operations. In this post, I'll show a quick demonstration on how triggers are used in PostgreSQL and how you can take advantage of this feature.
+
+      <br /><br />
+      <pre><code class="language-sql">
+
+      CREATE OR REPLACE FUNCTION example_trigger_function()
+        RETURNS TRIGGER AS $$
+      BEGIN
+        RAISE NOTICE 'Hello there';
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+      </code></pre>
+
+      <br />
+      To define a trigger, a trigger function is first created. The trigger function created is then bound to a table using CREATE TRIGGER. You can see a simple example below on how a trigger is bound to the insert event.
+      <br /><br />
+      <pre><code class="language-sql">
+
+      CREATE TRIGGER example_trigger
+        AFTER INSERT ON products
+        FOR EACH ROW
+      EXECUTE PROCEDURE example_trigger_function();
+      </code></pre>
+      <br />
+      Now, you'll see a notice after each insert operation on the products table.
+      <br /><br />
+      <pre><code class="language-sql">
+
+      INSERT INTO products(id, name, total, available) 
+        VALUES(100, 'Some Product', 400, 400);
+
+      NOTICE:  Hello there
+      INSERT 0 1
+      </code></pre>
+      <br /><br />
+      <div class="topic-container"><span class="topic">Triggers in Action: Products & Purchases</span></div>
+      We'll be working on two tables: products and purchases. The <span class="focus">products</span> table will serve as the container of the items to be purchased while the the <span class="focus">purchases</span> table will contain all transactions. Each product will have 3 (integer) counter fields: total, available, and purchased. The total count is simply the sum of the available and purchased fields.
+      <br /><br />
+      <pre><code class="language-sql">
+
+      CREATE TABLE products(
+        id integer PRIMARY KEY,
+        name text NOT NULL,
+        total integer NOT NULL DEFAULT 0,
+        available integer NOT NULL DEFAULT 0,
+        purchased integer NOT NULL DEFAULT 0,
+        CHECK (total >= 0),
+        CHECK (available >= 0),
+        CHECK (purchased >= 0),
+        CHECK (available <= total),
+        CHECK (purchased <= total)
+      );
+
+      INSERT INTO products(id, name, total, available) 
+        VALUES(1, 'Donut', 500, 500);
+
+      INSERT INTO products(id, name, total, available) 
+        VALUES(2, 'Burger', 400, 400);
+      </code></pre>
+      <br />
+      After creating the products table, we prepare the purchases table. Each purchase transaction is simply described by a Product ID and a value (stock count purchased). 
+      <br /><br />
+      <pre><code class="language-sql">
+
+      CREATE TABLE purchases(
+        id integer PRIMARY KEY,
+        product_id integer REFERENCES products,
+        value integer NOT NULL DEFAULT 0,
+        CHECK (value > 0);
+      )
+      </code></pre>
+      <br />
+      Take note that the sum of the values per product in the purchases table must match the purchased count in the corresponding product entry in the products table. Here's where we can use triggers to automatically update the counts of the products table everytime a new record is inserted to the purchases table.
+      <br /><br />
+      We first create a trigger function that updates the affected product row in the products table. Take note that we're just wrapping the update operation inside a trigger function below. After that, we bind the trigger function we created to the insert event on the purchases table.
+      <br /><br />
+      <pre><code class="language-sql">
+
+      CREATE OR REPLACE FUNCTION update_counts ()
+      RETURNS TRIGGER AS $$
+        BEGIN
+          UPDATE products
+          SET available = total - purchased - NEW.value,
+            purchased = purchased + NEW.value
+          WHERE id = NEW.product_id;
+          RETURN NEW;
+        END;
+      $$ LANGUAGE plpgsql;
+
+      CREATE TRIGGER update_counts_trigger
+      AFTER INSERT ON purchases FOR EACH ROW
+      EXECUTE PROCEDURE update_counts();
+      </code></pre>
+      <br />
+      Now let's try to populate the purchases table. We'll be purchasing 25 donuts and 18 burgers. 
+      <br /><br />
+      <pre><code class="language-sql">
+
+      INSERT INTO purchases(id, product_id, value) VALUES(1, 1, 5);
+      INSERT INTO purchases(id, product_id, value) VALUES(2, 1, 10);
+      INSERT INTO purchases(id, product_id, value) VALUES(3, 1, 10);
+      INSERT INTO purchases(id, product_id, value) VALUES(4, 2, 8);
+      INSERT INTO purchases(id, product_id, value) VALUES(5, 2, 10);
+      </code></pre>
+      <br />
+      See how the counts in the products table are automatically updated. Take note that this is just a simple example and modifications are necessary before this can be used in production environments (e.g. transactions and locks).
+      <br /><br />
+      <pre><code class="language-sql">
+
+      SELECT * FROM products;
+
+       id  |     name     | total | available | purchased 
+      -----+--------------+-------+-----------+-----------
+         1 | Donut        |   500 |       475 |        25
+         2 | Burger       |   400 |       382 |        18
+      </code></pre>
+      <br />
+      Pretty cool huh? We've also added CHECK constraints in the products table to prevent the purchased count from exceeding the total count.
+      <br /><br />
+      <div class="topic-container"><span class="topic">Preventing Deletions</span></div>
+      We can also use triggers to prevent deletion of rows on an existing table. We simply create a trigger function that returns NULL and bind that trigger function before the delete event. Take note that this will not protect your table from being truncated with the TRUNCATE operation.
+      <br /><br />
+      <pre><code class="language-sql">
+
+      CREATE OR REPLACE FUNCTION prevent_deletion()
+        RETURNS TRIGGER AS $$
+      BEGIN
+        RAISE NOTICE 'DELETION NOT ALLOWED';
+        RETURN NULL;
+      END;
+      $$ LANGUAGE plpgsql;
+
+      CREATE TRIGGER prevent_deletion_trigger
+        BEFORE DELETE ON purchases
+        FOR EACH ROW
+        EXECUTE PROCEDURE prevent_deletion();
+      </code></pre>
+      <br />
+      Let's try deleting one purchase entry in the purchases table. A notice saying "DELETION NOT ALLOWED" will be shown whenever an attempt to delete a row is made.
+      <br /><br />
+      <pre><code class="language-sql">
+
+      DELETE FROM purchases WHERE ID = 1;
+
+      NOTICE:  DELETION NOT ALLOWED
+      DELETE 0
+      </code></pre>
+      <br /><br />
+      <div class="topic-container"><span class="topic">Word of Advice</span></div>
+      Triggers are useful in certain actions such as integrity checks, logging, and applying custom constraints. Triggers should be used cautiously since they can lead to problems which are hard to debug. For more information on triggers, click <a href="http://www.postgresql.org/docs/9.1/static/sql-createtrigger.html" target="_blank">here</a>.
+      <br /><br />
+    </div>
+
+    <br /><br />
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+  </body>
+</html>
