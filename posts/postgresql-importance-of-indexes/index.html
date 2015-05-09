@@ -1,0 +1,299 @@
+<html>
+  <head>
+    <title>PostgreSQL: Importance of Indexes | JL Blog</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlblog.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+    <meta name="description" content="Joshua Lat. Personal website of Joshua Arvin Lat." />
+    <meta name="keywords" content="joshua lat, joshualat, arvin, www.joshualat.com, joshua arvin lat, postgresql, index, postgresql indexes" />
+    <meta name="author" content="Joshua Lat, admin@joshualat.com" />
+    <meta name="google-site-verification" content="XLIWgE7t9h07bUrVuvb3YnEroNOZpBRkBeEJb_D1KXg" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32022116-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body class="grid">
+    <div class="blog-nav">
+      <a href="http://joshualat.com">
+        <img id="jllogo" src="../shared/images/JL.png" width="40px" height="40px">
+      </a>
+
+      <a class="blog-title" href="http://joshualat.com/blog/">PostgreSQL: Importance of Indexes</a>
+      <div class="clear"></div>
+    </div>
+
+    <div class="content">
+      <div class="topic-container"><span class="topic">Should you index your database tables?</span></div>
+
+      Here's the answer: it depends. In certain situations, an index makes a query fast. In some cases, it makes a query slow. Creating an index simply means that a new data structure is created to help makes queries faster. For example, if you have 10,000 rows of data and you need to search for a row with ID 353, the database will simply search for the index 353 using an index scan instead of getting the entire table using a table scan and filtering out the remaining 9,999 rows. 
+
+      <br /><br />
+
+      The new data structure that is created when the create index operation is triggered is the <span class="focus">B-tree</span> or the <span class="focus">Balanced Tree</span> (by default). The B-tree is outside the scope of this post but it simply speeds up the searching process since it takes advantage of the concept of logarithmic scalability. The depth of the B-tree does not grow as fast as the number of indexed entries. This allows accessing indexes in just a few steps.
+
+      <br /><br />
+
+      We'll be showing below how to improve simple queries with indexes on PostgreSQL.
+      
+      <div class="topic-container"><span class="topic">A basic example: 10,000 rows</span></div>
+      
+      Let's start by creating a table called companies which has 2 columns: <span class="focus">id</span> and <span class="focus">name</span>. PostgreSQL, by default, indexes primary keys so the index scan is used whenever we specify the desired id in the where clause. Take note that the name is not indexed yet.
+
+      <br /><br />
+
+      <pre><code class="language-sql">
+
+      CREATE TABLE companies(
+        id integer PRIMARY KEY,
+        name text NOT NULL
+      );
+      </code></pre>
+
+      <br />
+
+      Next, we'll be creating a simple Ruby script that creates 10,000 insert statements so we can have 10,000 rows. Take note that all the company names are different for this example.
+
+      <br /><br />
+
+      
+      <pre><code class="language-ruby">
+
+      (1..10000).each do |i|
+        puts "INSERT INTO companies VALUES (%s, 'company-%s');" % [i, i]
+      end; nil
+      </code></pre>
+
+      <br />
+
+      You can see the output of the Ruby script below. The insert statements are then executed to fill up the table with 10,000 rows.
+
+      <br /><br />
+
+      <pre><code class="language-sql">
+
+      INSERT INTO companies VALUES (1, 'company-1');
+      INSERT INTO companies VALUES (2, 'company-2');
+      INSERT INTO companies VALUES (3, 'company-3');
+
+      ...
+
+      INSERT INTO companies VALUES (9997, 'company-9997');
+      INSERT INTO companies VALUES (9998, 'company-9998');
+      INSERT INTO companies VALUES (9999, 'company-9999');
+      INSERT INTO companies VALUES (10000, 'company-10000');
+      </code></pre>
+
+      <br />
+
+      Now let use <span class="focus">EXPLAIN</span> on the select query looking for a specific company name. We'll be wrapping the EXPLAIN query with BEGIN and ROLLBACK since we're using the <span class="focus">ANALYZE</span> keyword which executes the query. For this example, it isn't really necessary since the rollback is needed when analyzing the UPDATE and DELETE operations.
+
+      <br /><br />
+
+      <pre><code class="language-sql">
+
+      BEGIN; 
+      EXPLAIN ANALYZE SELECT * FROM companies WHERE name = 'company-2000'; 
+      ROLLBACK;
+      </code></pre>
+
+      <br />
+
+      You can see below that the execution time is <span class="focus">1.946 ms</span> and a full table scan was used to look for a single entry. Given that the name column is not indexed, this is the expected result.
+
+      <br /><br />
+
+      <pre><code class="language-sql">
+
+      BEGIN
+      
+      QUERY PLAN                                              
+      ----------------------------------------------------------
+      Seq Scan on companies  
+        (cost=0.00..188.31 rows=1 width=16) 
+        (actual time=0.333..1.925 rows=1 loops=1)
+      Filter: (name = 'company-2000'::text)
+        Rows Removed by Filter: 9999
+        Planning time: 0.104 ms
+        Execution time: 1.946 ms
+      (5 rows)
+
+      ROLLBACK
+      </code></pre>
+
+      <br />
+
+      Now, let us index the name column with <span class="focus">CREATE INDEX</span>. 
+
+      <br /><br />
+
+      <pre><code class="language-sql">
+
+      CREATE INDEX company_name_idx ON companies (name);
+      </code></pre>
+
+      <br />
+
+      You can see below that the execution time is 0.065 ms and an index scan was used to look for the entry. That's significantly faster than <span class="focus">1.946 ms</span>. That's about 30 times faster than the full table scan (for execution time)!
+
+      <br /><br />
+
+      <pre><code class="language-sql">
+      BEGIN
+
+      QUERY PLAN                                                          
+      ----------------------------------------------------------
+      Index Scan using company_name_idx on companies  
+        (cost=0.29..8.30 rows=1 width=16) 
+        (actual time=0.041..0.042 rows=1 loops=1)
+      Index Cond: (name = 'company-2000'::text)
+        Planning time: 0.190 ms
+        Execution time: 0.065 ms
+      (4 rows)
+
+      ROLLBACK
+      </code></pre>
+
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">A bigger example: 100,000 rows</span></div>
+
+      Next, let us try a bigger example. We'll be dropping the index first and add 9,000 rows to our existing table.
+
+      <br /><br />
+
+      <pre><code class="language-sql">
+
+      DROP INDEX company_name_idx;
+      </code></pre>
+
+      <br />
+
+      We'll be executing the following Ruby script to prepare our insert statements. The script should produce the same pattern for the company names as with the initial script.
+
+      <br /><br />
+
+      <pre><code class="language-ruby">
+
+      (10001..100000).each do |i|
+        puts "INSERT INTO companies VALUES (%s, 'company-%s');" % [i, i]
+      end; nil
+      </code></pre>
+
+      <br />
+
+      Next, the following lines are executed to fill up the table with 9,000 more rows. There should still be no duplicate company names after the insert statements are executed.
+
+      <br /><br />
+
+      <pre><code class="language-sql">
+
+      INSERT INTO companies VALUES (10001, 'company-10001');
+      INSERT INTO companies VALUES (10002, 'company-10002');
+      INSERT INTO companies VALUES (10003, 'company-10003');
+
+      ...
+
+      INSERT INTO companies VALUES (99998, 'company-99998');
+      INSERT INTO companies VALUES (99999, 'company-99999');
+      INSERT INTO companies VALUES (100000, 'company-100000');
+      </code></pre>
+
+      <br />
+
+      Let us now run the same <span class="focus">EXPLAIN</span> query again. 
+
+      <br /><br />      
+
+      <pre><code class="language-sql">
+
+      BEGIN; 
+      EXPLAIN ANALYZE SELECT * FROM companies WHERE name = 'company-2000'; 
+      ROLLBACK;
+      </code></pre>
+
+      <br />
+
+      Since we removed the index on the company names, a sequence scan has been performed instead of an index scan. Take note that it took <span class="focus">15.050 ms</span> to perform the full table scan.
+
+      <br /><br />      
+
+      <pre><code class="language-sql">
+
+      BEGIN
+
+      QUERY PLAN                                               
+      ----------------------------------------------------------
+      Seq Scan on companies  
+        (cost=0.00..1885.28 rows=1 width=17) 
+        (actual time=0.590..15.029 rows=1 loops=1)
+      Filter: (name = 'company-2000'::text)
+        Rows Removed by Filter: 99999
+        Planning time: 0.134 ms
+        Execution time: 15.050 ms
+      (5 rows)
+
+      ROLLBACK
+      </code></pre>
+
+      <br />
+
+      Let's now create the index again on the company names with the <span class="focus">CREATE INDEX</span> command. After this, we'll run the <span class="focus">EXPLAIN</span> query again.
+
+      <br /><br />      
+
+      <pre><code class="language-sql">
+
+      CREATE INDEX company_name_idx ON companies (name);
+
+      BEGIN; 
+      EXPLAIN ANALYZE SELECT * FROM companies WHERE name = 'company-2000'; 
+      ROLLBACK;
+      </code></pre>
+
+      <br />
+
+      This time, an index scan was performed and it took 0.111 ms for the query to execute. That's significantly faster than 15.050 ms. That's 135 times faster than the full table scan (for the execution time)! Of course, when computing for the total time, the planning time should be taken into account as well.
+
+      <br /><br />      
+
+      <pre><code class="language-sql">
+
+      BEGIN
+
+      QUERY PLAN                                               
+      ----------------------------------------------------------
+      Index Scan using company_name_idx on companies  
+        (cost=0.42..8.44 rows=1 width=17) 
+        (actual time=0.088..0.089 rows=1 loops=1)
+      Index Cond: (name = 'company-2000'::text)
+        Planning time: 0.194 ms
+        Execution time: 0.111 ms
+      (4 rows)
+
+      ROLLBACK
+      </code></pre>
+
+      <br />
+
+      As you can see, without indexes, the full table scan takes longer every time a row is added since each row is being checked for a match. This is just a simple example but this displays how important indexes are and how much it improves the performance of the database queries. For more information about this topic, click <a href="http://www.postgresql.org/docs/9.1/static/sql-createindex.html" target="_blank">here</a>.
+
+      <br /><br />
+    </div>
+
+    <br /><br />
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+  </body>
+</html>
