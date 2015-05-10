@@ -1,0 +1,374 @@
+<html>
+  <head>
+    <title>PostgreSQL: Row Locks | JL Blog</title>
+    <link href='../shared/images/favicon.ico' rel='icon' type='image/png' />
+    <link rel="stylesheet" type="text/css" href="../shared/css/jlblog.css">
+    <link rel="stylesheet" type="text/css" href="../shared/css/prism.css">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+    <meta name="description" content="Joshua Lat. Personal website of Joshua Arvin Lat." />
+    <meta name="keywords" content="joshua lat, joshualat, arvin, www.joshualat.com, joshua arvin lat, postgresql, index, postgresql indexes" />
+    <meta name="author" content="Joshua Lat, admin@joshualat.com" />
+    <meta name="google-site-verification" content="XLIWgE7t9h07bUrVuvb3YnEroNOZpBRkBeEJb_D1KXg" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32022116-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body class="grid">
+    <div class="blog-nav">
+      <a href="http://joshualat.com">
+        <img id="jllogo" src="../shared/images/JL.png" width="40px" height="40px">
+      </a>
+
+      <a class="blog-title" href="http://joshualat.com/blog/">PostgreSQL: Row Locks</a>
+      <div class="clear"></div>
+    </div>
+
+    <div class="content">
+      <div class="topic-container"><span class="topic">Importance of Row Locks</span></div>
+      For the past couple of years, I've been building and maintaining E-commerce web applications that serve thousands of customers. Whenever there are data inconsistency problems in the database, there's a big chance that the company is losing money due to multiple problems happening at the same time (e.g. overselling issues).
+      <br /><br />
+      There are many reasons why data inconsistency issues occur and one of them involves race conditions. Race conditions are hard to debug since these usually occur with multiple concurrent sessions and transactions. This post is about the use of row-level locks using <span class="focus">ActiveRecord</span> to prevent race conditions in the <span class="focus">read-modify-write cycle</span>.
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">Setup</span></div>
+      Our setup for this post consists of a single table called <span class="focus">repetitions</span>. To have a better appreciation of locks, we'll start with the concurrency issues which may occur when doing read and update operations without locks. After that, we'll try concurrent read and writes with <span class="focus">exclusive row locks</span>.
+      <br /><br />
+
+      <pre><code class="language-ruby">
+
+      ActiveRecord::Schema.define(version: 20150510072109) do
+        enable_extension "plpgsql"
+
+        create_table "repetitions", force: :cascade do |t|
+          t.integer  "count"
+          t.datetime "created_at", null: false
+          t.datetime "updated_at", null: false
+        end
+      end
+      </code></pre>
+
+      <br />
+      Next, we'll create a record with a count of 100. 
+      <br /><br />
+
+      <pre><code class="language-ruby">
+
+      repetition = Repetition.create(count: 100)
+      </code></pre>
+
+      <br />
+
+      We'll be using this record for the examples in this post. 
+
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">Simple Update Operation without Locks</span></div>
+
+      When incrementing the count of a field, it is common to see the following lines of code when using <span class="focus">ActiveRecord</span>. When executed in a local environment, everything may appear fine to developers. Unfortunately a race condition will occur when the following lines of code are run in a production environment where multiple users may read and update the same row at the same time.
+
+      <br /><br />
+
+      <pre><code class="language-ruby">
+
+      repetition = Repetition.find(2)
+      repetition.count += 1
+      repetition.save!      
+      </code></pre>
+
+      <br />
+
+      How? The Ruby code above translates to the SQL statements below. Take note that we're using PostgreSQL in this example. By default, PostgreSQL uses the <span class="focus">read committed isolation level</span>. This means that a <span class="focus">SELECT</span> query does not see (yet) the changes committed during query execution by other concurrent transactions. With the example below, another concurrent transaction might use the old value from the SELECT query to update the same row. Even if the count is already 101 in one transaction, the count value read might still be 100 in another concurrent transaction.
+
+      <br /><br />
+
+      <pre><code class="language-sql">
+
+      SELECT  "repetitions".* FROM "repetitions" 
+          WHERE "repetitions"."id" = $1 LIMIT 1  [["id", 2]]
+      
+      BEGIN
+      UPDATE "repetitions" SET "count" = $1, "updated_at" = $2 
+          WHERE "repetitions"."id" = $3  
+              [["count", 101], 
+               ["updated_at", "2015-05-10 12:12:59.981593"], 
+               ["id", 2]]
+      COMMIT
+      </code></pre>      
+
+      <br />
+      Let's see in the next section how multiple concurrent transactions will cause integrity problems with the <span class="focus">read-modify-write cycle</span> example above.
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">Testing concurrency without locks</span></div>
+
+      We'll write a simple class that creates 5 threads and performs the read-modify-write increment operation concurrently without locks. I've intentionally put <span class="focus">sleep</span> calls to trigger the race conditions.
+
+      <br /><br />
+
+      <pre><code class="language-ruby">
+
+      class ConcurrencyTester
+        def initialize(resource: resource)
+          @resource = resource
+        end
+
+        def process!
+          threads = []
+
+          5.times do
+            threads << Thread.new do
+              increment_without_locking
+            end
+          end
+
+          threads.each do |thread|
+            thread.join
+          end
+        end
+
+        def increment_without_locking
+          ActiveRecord::Base.connection_pool.with_connection do
+            sleep(rand())
+            @resource = Repetition.find(@resource.id)
+            sleep(rand())
+            @resource.count += 1
+            sleep(rand())
+            @resource.save!
+          end
+        end
+      end
+      </code></pre>
+
+      <br />
+      We'll then set the value of the count to 100 and run the <span class="focus">ConcurrencyTester</span> class.
+      <br /><br />
+
+      <pre><code class="language-ruby">
+
+      repetition = Repetition.first
+      repetition.count = 100
+      repetition.save!
+
+      ct = ConcurrencyTester.new(resource: repetition)
+      ct.process!
+
+      puts repetition.reload.count
+      => 103 WRONG
+      </code></pre>
+
+      <br />
+      After reloading the count, we see that the count is 103 and not 105. Take note that wrapping the operations above with a transaction does not fix the concurrency issue. The SQL statements below were executed by the concurrent operations above. You'll see that the last update operation had the value of 103 since it got a count of 102 from its previous SELECT query. We'll actually get different values everytime we execute the same lines of code due to the sleep calls.
+      <br /><br />
+
+      <pre><code class="language-sql" style="font-size: 12px;">
+
+        Repetition Load (0.2ms)  SELECT  "repetitions".* FROM "repetitions" 
+            WHERE "repetitions"."id" = $1 LIMIT 1  [["id", 2]]
+        Repetition Load (0.3ms)  SELECT  "repetitions".* FROM "repetitions" 
+            WHERE "repetitions"."id" = $1 LIMIT 1  [["id", 2]]
+        Repetition Load (0.4ms)  SELECT  "repetitions".* FROM "repetitions" 
+            WHERE "repetitions"."id" = $1 LIMIT 1  [["id", 2]]
+        Repetition Load (0.6ms)  SELECT  "repetitions".* FROM "repetitions" 
+            WHERE "repetitions"."id" = $1 LIMIT 1  [["id", 2]]
+            (0.3ms)  BEGIN
+            (0.3ms)  COMMIT
+        Repetition Load (0.3ms)  SELECT  "repetitions".* FROM "repetitions" 
+            WHERE "repetitions"."id" = $1 LIMIT 1  [["id", 2]]
+            (0.4ms)  BEGIN
+        SQL (0.2ms)  UPDATE "repetitions" SET "count" = $1, "updated_at" = $2 
+            WHERE "repetitions"."id" = $3  [["count", 102], 
+                                            ["updated_at", "2015-05-10 10:46:12.500102"], 
+                                            ["id", 2]]
+            (0.5ms)  COMMIT
+            (0.3ms)  BEGIN
+            (0.2ms)  COMMIT
+            (0.3ms)  BEGIN
+        SQL (0.2ms)  UPDATE "repetitions" SET "count" = $1, "updated_at" = $2 
+            WHERE "repetitions"."id" = $3  [["count", 103], 
+                                            ["updated_at", "2015-05-10 10:46:12.856025"], 
+                                            ["id", 2]]
+            (0.5ms)  COMMIT
+            (0.2ms)  BEGIN
+            (0.2ms)  COMMIT
+      </code></pre>
+
+      <br />
+      This is where locks come in. There are multiple ways of doing this. We can lock the entire table (which is a bad idea) or we can explicitly lock the affected row only.
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">Exclusive Row Locks</span></div>
+
+      The following lines of code demonstrate the use of exclusive row locks in ActiveRecord. We're using the module <span class="focus">ActiveRecord::Locking::Pessimistic</span> for row-level locking. There are multiple ways of doing this but we'll use the one below.
+
+      <br /><br />
+
+      <pre><code class="language-ruby">
+
+      Repetition.transaction do
+        repetition = Repetition.lock.find(2)
+        repetition.count += 1
+        repetition.save!
+      end
+      </code></pre>
+
+      <br />
+      The Ruby code above translates to the SQL statements below. Take note that the FOR UPDATE keywords were appended to the SELECT statement. The <span class="focus">SELECT FOR UPDATE</span> locks the entire row until the transaction commits or rolls back. Update operations may be done without fear of conflict or race conditions.
+      <br /><br />
+
+      <pre><code class="language-sql">
+
+      BEGIN
+
+      SELECT  "repetitions".* FROM "repetitions" 
+          WHERE "repetitions"."id" = $1 LIMIT 1 
+          FOR UPDATE  [["id", 2]]
+
+      UPDATE "repetitions" SET "count" = $1, "updated_at" = $2 
+          WHERE "repetitions"."id" = $3  
+              [["count", 101], 
+               ["updated_at", "2015-05-10 11:51:41.624400"], 
+               ["id", 2]]
+      
+      COMMIT
+      </code></pre>      
+
+      <br />
+
+      We'll update our <span class="focus">ConcurrencyTester</span> class in the next section with the support for exclusive row locks.
+
+      <br /><br />
+
+      <div class="topic-container"><span class="topic">Testing concurrency with exclusive row locks</span></div>
+
+      We'll start by writing an increment method that makes use of <span class="focus">row-level locks</span>. We've also intentionally placed sleep calls to force race conditions in case the locks don't work.
+      <br /><br />
+
+      <pre><code class="language-ruby">
+
+      class ConcurrencyTester
+
+        ....
+        
+        def process!
+          threads = []
+
+          5.times do
+            threads << Thread.new do
+              increment_with_locking
+            end
+          end
+
+          threads.each do |thread|
+            thread.join
+          end
+        end
+
+        ....
+
+        def increment_with_locking
+          ActiveRecord::Base.connection_pool.with_connection do
+            sleep(rand())
+
+            Repetition.transaction do
+              @resource = Repetition.lock.find(@resource.id)
+              sleep(rand())
+              @resource.count += 1
+              sleep(rand())
+              @resource.save!
+            end
+          end
+        end
+
+        ...
+      end
+      </code></pre>
+
+      <br />
+      Next, we reset the value of the count to 100 and run the ConcurrencyTester again. Now, no matter how many times we execute this, we'll get the value of 105.
+      <br /><br />
+
+      <pre><code class="language-ruby">
+
+      repetition = Repetition.first
+      repetition.count = 100
+      repetition.save!
+      
+      ct = ConcurrencyTester.new(resource: repetition)
+      ct.process!
+
+      puts repetition.reload.count
+      => 105 CORRECT
+      </code></pre>
+
+      <br />
+      You can see below the SQL statements executed by the concurrent operations done above.
+      <br /><br />
+
+      <pre><code class="language-sql" style="font-size: 12px;">
+
+            (0.2ms)  BEGIN
+        Repetition Load (0.2ms)  SELECT  "repetitions".* FROM "repetitions" 
+            WHERE "repetitions"."id" = $1 LIMIT 1 FOR UPDATE  [["id", 2]]
+            (0.4ms)  BEGIN
+            (0.3ms)  BEGIN
+            (0.5ms)  BEGIN
+        SQL (0.3ms)  UPDATE "repetitions" SET "count" = $1, "updated_at" = $2 
+            WHERE "repetitions"."id" = $3  [["count", 101], 
+                                            ["updated_at", "2015-05-10 10:53:11.457792"], 
+                                            ["id", 2]]
+        Repetition Load (272.2ms)  SELECT  "repetitions".* FROM "repetitions" 
+            WHERE "repetitions"."id" = $1 LIMIT 1 FOR UPDATE  [["id", 2]]
+            (0.5ms)  COMMIT
+            (0.4ms)  BEGIN
+        SQL (0.2ms)  UPDATE "repetitions" SET "count" = $1, "updated_at" = $2 
+            WHERE "repetitions"."id" = $3  [["count", 102], 
+                                            ["updated_at", "2015-05-10 10:53:12.394803"], 
+                                            ["id", 2]]
+            (0.5ms)  COMMIT
+        Repetition Load (1208.9ms)  SELECT  "repetitions".* FROM "repetitions" 
+            WHERE "repetitions"."id" = $1 LIMIT 1 FOR UPDATE  [["id", 2]]
+        SQL (0.3ms)  UPDATE "repetitions" SET "count" = $1, "updated_at" = $2 
+            WHERE "repetitions"."id" = $3  [["count", 103], 
+                                            ["updated_at", "2015-05-10 10:53:12.661593"], 
+                                            ["id", 2]]
+            (0.5ms)  COMMIT
+        Repetition Load (1233.2ms)  SELECT  "repetitions".* FROM "repetitions" 
+            WHERE "repetitions"."id" = $1 LIMIT 1 FOR UPDATE  [["id", 2]]
+        SQL (0.3ms)  UPDATE "repetitions" SET "count" = $1, "updated_at" = $2 
+            WHERE "repetitions"."id" = $3  [["count", 104], 
+                                            ["updated_at", "2015-05-10 10:53:13.308481"], 
+                                            ["id", 2]]
+        Repetition Load (1720.1ms)  SELECT  "repetitions".* FROM "repetitions" 
+            WHERE "repetitions"."id" = $1 LIMIT 1 FOR UPDATE  [["id", 2]]
+            (0.5ms)  COMMIT
+        SQL (0.2ms)  UPDATE "repetitions" SET "count" = $1, "updated_at" = $2 
+            WHERE "repetitions"."id" = $3  [["count", 105], 
+                                            ["updated_at", "2015-05-10 10:53:14.230289"], 
+                                            ["id", 2]]
+           (0.4ms)  COMMIT
+
+      </code></pre>
+
+      <br />
+      You can see with the statements above that each SELECT statement waits for the previous transaction to commit. Compared to the queries without locks, this one proves to be consistent and prevents race conditions. For more information on explicit locking, click <a href="http://www.postgresql.org/docs/9.1/static/explicit-locking.html" target="_blank">here</a>.
+      <br /><br />
+      Knowledge on locks and concurrency is critical when building applications that serve multiple customers since concurrency issues are also hard to debug.
+      <br /><br />
+    </div>
+
+    <br /><br />
+
+    <script type="text/javascript" src="../shared/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../shared/bower_components/prismjs/prism.js"></script>
+  </body>
+</html>
