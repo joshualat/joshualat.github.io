@@ -82,15 +82,15 @@
 
     <slide title="SOLUTION 2: Row Exclusive Lock" link="row-exclusive-lock">
       <prism class="language-sql big-code">
-      BEGIN; 
+    BEGIN; 
 
-      SELECT  "repetitions".* FROM "repetitions" 
-        WHERE "repetitions"."id" = 2 LIMIT 1 FOR UPDATE; 
+    SELECT  "repetitions".* FROM "repetitions" 
+      WHERE "repetitions"."id" = 2 LIMIT 1 FOR UPDATE; 
 
-      UPDATE "repetitions" SET "count" = 101 
-        WHERE "repetitions"."id" = 2; 
+    UPDATE "repetitions" SET "count" = 101 
+      WHERE "repetitions"."id" = 2; 
 
-      COMMIT;
+    COMMIT;
       </prism>
     </slide>
 
