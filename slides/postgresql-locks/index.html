@@ -25,11 +25,112 @@
 
   <body ng-app="jlslides" ng-cloak slidekeys>
     <slide title="What's wrong?" link="what-is-wrong">
-      <prism class="language-ruby">
-        repetition = Repetition.find(2)
-        repetition.count = repetition.count + 100
-        repetition.save
+      <blue>What's wrong with this picture?</blue>
+
+      <prism class="language-ruby big-code">
+        
+      repetition = Repetition.find(2)
+      repetition.count = repetition.count + 100
+      repetition.save
       </prism>
+    </slide>
+    <slide title="race-condition" link="sql">
+      <prism class="language-sql big-code">
+      SELECT  "repetitions".* FROM "repetitions" 
+        WHERE "repetitions"."id" = 2 LIMIT 1 
+        (got count = 201)
+
+      UPDATE "repetitions" SET "count" = 301 
+        WHERE "repetitions"."id" = 2
+      </prism>
+    </slide>
+    <slide title="race-condition-detailed" link="sql-detailed">
+      <prism class="language-sql">
+    SELECT  "repetitions".* 
+      FROM "repetitions" 
+      WHERE "repetitions"."id" = 2
+      LIMIT 1 (got count = 201)
+                                            SELECT  "repetitions".* 
+                                              FROM "repetitions" 
+                                              WHERE "repetitions"."id" = 2
+                                              LIMIT 1 (got count = 201)
+
+    UPDATE "repetitions" 
+      SET "count" = 301
+      WHERE "repetitions"."id" = 2  
+        
+
+                                            UPDATE "repetitions" 
+                                              SET "count" = 301
+                                              WHERE "repetitions"."id" = 2  
+      </prism>
+    </slide>
+    <slide title="Don't transactions prevent this?" link="dont-transactions-prevent-this">
+      Don't <red>transactions</red> prevent this?
+    </slide>
+
+    <slide title="SOLUTION 1: Exclusive Access" link="exclusive-access">
+      <prism class="language-sql big-code">
+      BEGIN; 
+
+      LOCK TABLE repetitions IN ACCESS EXCLUSIVE MODE;
+
+      COMMIT;
+      </prism>
+    </slide>
+
+    <slide title="SOLUTION 2: Row Exclusive Lock" link="row-exclusive-lock">
+      <prism class="language-sql big-code">
+      BEGIN; 
+
+      SELECT  "repetitions".* FROM "repetitions" 
+        WHERE "repetitions"."id" = 2 LIMIT 1 FOR UPDATE; 
+
+      UPDATE "repetitions" SET "count" = 101 
+        WHERE "repetitions"."id" = 2; 
+
+      COMMIT;
+      </prism>
+    </slide>
+
+    <slide title="SOLUTION 2: Row Exclusive Lock" link="row-exclusive-lock" page="2">
+      <prism class="language-ruby big-code">
+      Repetition.transaction do
+        repetition = Repetition.lock.find(2)
+        repetition.count += 100
+        repetition.save!
+      end
+      </prism>
+    </slide>
+
+    <slide title="SOLUTION 3: SQL Update" link="sql-update">
+      <prism class="language-sql big-code">
+      UPDATE "repetitions" 
+        SET count = count + 1
+        WHERE "repetitions"."id" = 2; 
+      </prism>
+    </slide>
+
+    <slide title="SOLUTION 3: SQL Update" link="sql-update" page="2">
+      <prism class="language-ruby big-code">
+
+    c = ActiveRecord::Base.connection_pool
+
+    c.with_connection do |con| 
+      con.exec_query("UPDATE repetitions 
+                      SET count = count + 1 
+                      WHERE repetitions.id = 2;") 
+    end
+      </prism>
+    </slide>
+
+    <slide title="Other Solutions" link="other-solutions">
+      <align>
+        <red>Other Solutions</red><br />
+        * SERIALIZABLE transactions
+        <br />
+        * Optimistic Locking
+      </align>
     </slide>
 
     <slidenav title="PostgreSQL: Locks"></slidenav>
